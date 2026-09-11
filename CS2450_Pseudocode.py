@@ -12,7 +12,6 @@ class VMem(register_count: int = 1)
 	def __init__
 		Registercount: int;
 		registers: list;
-		current: int = 0
 		for i in range(register_count):
 			register = VRegister();
 			registers.append(register);
@@ -40,10 +39,12 @@ class LoadHandler()
 Main:
 	User Prompt Loop:
 		Ask user for command:
-Load File
-Load and run full file
-Load and run 1 at a time
-Display 
-Memory
-Accumulator
-Exit
+			Load File
+				Load and run full file
+				Load and run 1 at a time
+					continue
+					exit
+			Display 
+				Memory
+				Accumulator
+			Exit
