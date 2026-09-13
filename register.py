@@ -8,5 +8,8 @@ class VRegister():
 
     @value.setter
     def value(self, val):
-        #verification here
-        self._value = val
+        if val < 9999 or val > -9999:
+            self._value = val
+        else:
+            # TODO however we end up handling errors, this is the spot to check if a word has overflowed. -Jake
+            pass

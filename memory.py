@@ -7,3 +7,9 @@ class VMemory():
         for i in range(self.register_count):
             register = VRegister()
             self.registers.append(register)
+
+    def read():
+        pass
+    
+    def write():
+        pass
