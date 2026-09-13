@@ -9,11 +9,23 @@ def main():
     running = True
     while running:
         user_input = input("1: Load a File\n2: Display Values\n3. Exit\n")
-        match user_input:
+        match user_input[0]:
             case "1":
                 print("Loading File Here")
             case "2":
-                print("Display Values Here")
+                valid = True
+                print("Please select option to display.")
+                while valid:
+                    display_input = input("1: Display Accumulator\n2: Display Memory\n3. Exit\n")
+                    match display_input[0]:
+                        case "1":
+                            print(f"Current Accumulator Value: {accumulator.value}")
+                            valid = False
+                        case "2":
+                            print(f"Current Memory Address Values: \n{main_mem.display_values()}")
+                            valid = False
+                        case _:
+                            print("Invalid input, must enter 1, 2.")
             case "3":
                 print("Exiting Program")
                 running = False
