@@ -8,8 +8,8 @@ class VMemory():
             register = VRegister()
             self.registers.append(register)
 
-    def read():
-        pass
-    
-    def write():
-        pass
+    def read(self, address: int) -> int:
+        return self.registers[address].value
+
+    def write(self, address: int, value: int):
+        self.registers[address].value = value
