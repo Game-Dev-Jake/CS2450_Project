@@ -5,10 +5,10 @@ def main():
     main_mem: VMemory = VMemory(memory_count)
     accumulator: VRegister = VRegister(0)
     cpu: VCPU = VCPU(accumulator,main_mem)
-    print("Welcome to UVSim, please enter a command to continue:")
+    print("Welcome to UVSim, CPU has been built with 100 registers. Please enter a command to continue:")
     running = True
     while running:
-        user_input = input("1: Load a File\n2: Display Values\n3. Exit\n")
+        user_input = input("1: Load a File\n2: Display Values\n3. Manual Command\n4. Exit\n")
         match user_input[0]:
             case "1":
                 print("Loading File Here")
@@ -27,6 +27,8 @@ def main():
                         case _:
                             print("Invalid input, must enter 1, 2.")
             case "3":
+                print("Manual Command Terminal.")
+            case "4":
                 print("Exiting Program")
                 running = False
             case _:
