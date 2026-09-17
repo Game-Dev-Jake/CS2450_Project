@@ -3,6 +3,7 @@ from register import VRegister
 
 class VCPU():
     def __init__(self, accum: VRegister, mem: VMemory, cur: int = 0):
+        self.running = False
         self.accumulator: VRegister = accum
         self.memory: VMemory = mem
         self.current: int = cur
@@ -21,13 +22,26 @@ class VCPU():
             43: self.HALT
         }
 
+    def run(self, count: int = 0):
+        self.running = True
+        if count == 0:
+            while self.running:
+                self.step()
+        else:
+            for i in range(count):
+                if self.running:
+                    self.step()
+
     def step(self):
         word: int = self.memory.read(self.current)
         opcode, address = divmod(word, 100)
         self.current +=1
         if opcode not in self.opcode_table:
             self.UNKOWN(address)
-        self.opcode_table[opcode](address)
+        elif opcode == 0:
+            self.HALT()
+        else:
+            self.opcode_table[opcode](address)
 
     def UNKOWN(self, address: int):
         # TODO An unknown opcode has been found. Whatever we do for error handling will go here. For now, I'm printing it -Jake

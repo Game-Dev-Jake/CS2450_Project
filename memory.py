@@ -17,5 +17,5 @@ class VMemory():
     def display_values(self) -> str:
         lines = []
         for index, register in enumerate(self.registers):
-            lines.append(f"Register: {index}. Value: {register.value}.")
+            lines.append(f"Register: {index}. Value: {register.value}")
         return "\n".join(lines)
