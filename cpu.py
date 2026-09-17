@@ -23,10 +23,15 @@ class VCPU():
         }
 
     def run(self, count: int = 0):
+        run_count: int = 0
         self.running = True
         if count == 0:
             while self.running:
                 self.step()
+                run_count += 1
+                if run_count > 99:
+                    print("Runtime limit reached, aborting process.")
+                    running = False
         else:
             for i in range(count):
                 if self.running:
@@ -44,7 +49,7 @@ class VCPU():
             self.opcode_table[opcode](address)
 
     def UNKOWN(self, address: int):
-        # TODO An unknown opcode has been found. Whatever we do for error handling will go here. For now, I'm printing it -Jake
+        self.running = False
         print("An unkown opcode has been loaded.")
         pass
 
@@ -82,4 +87,5 @@ class VCPU():
         pass
 
     def HALT(self, address: int):
+        self.running = False
         pass
