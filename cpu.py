@@ -29,7 +29,7 @@ class VCPU():
             while self.running:
                 self.step()
                 run_count += 1
-                if run_count > 99:
+                if run_count > 999:
                     print("Runtime limit reached, aborting process.")
                     running = False
         else:
@@ -41,10 +41,11 @@ class VCPU():
         word: int = self.memory.read(self.current)
         opcode, address = divmod(word, 100)
         self.current +=1
-        if opcode not in self.opcode_table:
-            self.UNKOWN(address)
-        elif opcode == 0:
+        if opcode == 0:
+            print("Program reached empty register, aborting execution.")
             self.HALT()
+        elif opcode not in self.opcode_table:
+            self.UNKOWN(address)
         else:
             self.opcode_table[opcode](address)
 
