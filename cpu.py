@@ -43,13 +43,14 @@ class VCPU():
     def run(self, count: int = 0):
         run_count: int = 0
         self.running = True
+        self.current = 0
         if count == 0:
             while self.running:
                 self.step()
                 run_count += 1
                 if run_count > 999:
                     print("Runtime limit reached, aborting process.")
-                    running = False
+                    self.running = False
         else:
             for i in range(count):
                 if self.running:
@@ -61,7 +62,7 @@ class VCPU():
         self.current +=1
         if opcode == 0:
             print("Program reached empty register, aborting execution.")
-            self.HALT()
+            self.HALT(0)
         elif opcode not in self.opcode_table:
             self.UNKOWN(address)
         else:
@@ -80,7 +81,7 @@ class VCPU():
         while True:
             try:
                 raw = input(
-                    "Enter a word from location {:02d}:".format(address)
+                    "Enter a word to store in memory location {:02d}:".format(address)
                     )
             except (EOFError, KeyboardInterrupt):
                 print("ERROR: Read: no input received")
@@ -113,7 +114,6 @@ class VCPU():
             )
             return False
         return True
-    print("READ")
 
     def WRITE(self, address):
         value= self.memory.read(address)
@@ -124,7 +124,6 @@ class VCPU():
             return False
         print(format_word(value))
         return True
-    print("WRITE")
 
     def LOAD(self,address):
         value = self.memory.read(address)
@@ -139,7 +138,6 @@ class VCPU():
                 "ERROR: Load: invalid word {}".format(address)
             )
             return False
-    print("LOAD")
 
     def STORE(self, address):
         value = self.accumulator.value
@@ -153,46 +151,51 @@ class VCPU():
                 )
                 return False
         return True
-    print("STORE")
 
-    def ADD(self, address: int, accum):
+    def ADD(self, address: int):
         """Adds the value at a given address to the accumulator,
         and stores the result back in the accumulator."""
-        print(f"Adding {address} to {self.accum}")
+        print(f"Adding {self.memory.read(address)} to {self.accumulator.value}")
         result = self.memory.read(address) + self.accumulator.value
         if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accum}")
+            print(f"Accumulator is now: {self.accumulator.value}")
         else:
             print("Accumulator value is outside of range -9999:9999")
 
-    def SUBTRACT(self, address: int, accum):
+    def SUBTRACT(self, address: int):
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
-        print(f"Subtracting {address} from {self.accum}")
-        result = self.accum - address
-        self.accum = result
-        print(f"Accumulator is now: {self.accum}")
+        print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
+        result = self.memory.read(address) - self.accumulator.value
+        if self.accumulator.set_value(result):
+            print(f"Accumulator is now: {self.accumulator.value}")
+        else:
+            print("Accumulator value is outside of range -9999:9999")
 
-    def DIVIDE(self, address: int, accum):
+    def DIVIDE(self, address: int):
         """Divides the accumulator by the value at a given address, 
         and stores the result back in the accumulator.
         Result is be an integer by using floor division. 
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN UNKNOWN OPCODE ERROR***"""
-        print(f"Dividing {self.accum} by {address}")
-        result = self.accum // address
-        self.accum = result
-        print(f"Accumulator is now: {self.accum}")
+        print(f"Dividing {self.memory.read(address)} from {self.accumulator.value}")
+        result = self.memory.read(address) / self.accumulator.value
+        if self.accumulator.set_value(result):
+            print(f"Accumulator is now: {self.accumulator.value}")
+        else:
+            print("Accumulator value is outside of range -9999:9999")
 
-    def MULTIPLY(self, address: int, accum):
+    def MULTIPLY(self, address: int):
         """Multiplies the accumulator by the vaule at a given address, 
         and stores the result back in the accumulator.
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN OUT OF BOUNDS ERROR***"""
-        print(f"Multiplying {self.accum} by {address}")
-        result = address * self.accum
-        self.accum = result
-        print(f"Accumulator is now: {self.accum}")
+        print(f"Multiplying {self.memory.read(address)} by {self.accumulator.value}")
+        result = self.memory.read(address) * self.accumulator.value
+        if self.accumulator.set_value(result):
+            print(f"Accumulator is now: {self.accumulator.value}")
+        else:
+            print("Accumulator value is outside of range -9999:9999")
 
     def BRANCH(self, address: int):
         # branch to a valid address
@@ -226,5 +229,3 @@ class VCPU():
 
     def HALT(self, address: int):
         self.running = False
-        pass
-
