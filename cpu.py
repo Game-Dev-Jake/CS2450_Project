@@ -66,22 +66,33 @@ class VCPU():
         pass
 
     def ADD(self, address: int, accum):
+        """Adds the value at a given address to the accumulator,
+        and stores the result back in the accumulator."""
         result = address + accum
-        return result
+        self.accum = result
 
     def SUBTRACT(self, address: int, accum):
+        """"Subtracts the value at a given address from the accumulator,
+        and stores the result back in the accumulator."""
         result = accum - address
-        return result
+        self.accum = result
 
     def DIVIDE(self, address: int, accum):
-        "Will currently always return an 'unknown opcode has been loaded' error because a 4 digit number divided by a 4 digit number is not a 4 digit number"
-        result = accum / address
-        return result
+        """Divides the accumulator by the value at a given address, 
+        and stores the result back in the accumulator.
+        Result is be an integer by using floor division. 
+        ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
+           IN AN UNKNOWN OPCODE ERROR***"""
+        result = accum // address
+        self.accum = result
 
     def MULTIPLY(self, address: int, accum):
-        "Will currently always return an 'out of bounds' error because a 4 digit number multiplied by a 4 digit number is not a 4 digit number"
+        """Multiplies the accumulator by the vaule at a given address, 
+        and stores the result back in the accumulator.
+        ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
+           IN AN OUT OF BOUNDS ERROR***"""
         result = address * accum
-        return result
+        self.accum = result
 
     def BRANCH(self, address: int):
         pass
