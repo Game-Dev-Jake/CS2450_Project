@@ -1,17 +1,21 @@
 from cpu import VCPU, VRegister, VMemory
+from load_handler import LoadHandler
+from pathlib import Path
 
 def main():
+    loader = LoadHandler()
     memory_count: int = 100
     main_mem: VMemory = VMemory(memory_count)
     accumulator: VRegister = VRegister(0)
     cpu: VCPU = VCPU(accumulator,main_mem)
-    print("Welcome to UVSim, CPU has been built with 100 registers. Please enter a command to continue:")
+    print(f"Welcome to UVSim, CPU has been built with {memory_count} registers. Please enter a command to continue:")
     running = True
     while running:
         user_input = input("1: Load a File\n2: Display Values\n3. Manual Command\n4. Exit\n")
         match user_input[0]:
             case "1":
-                print("Loading File Here")
+                loader.load_menu(main_mem)
+                cpu.run()
             case "2":
                 valid = True
                 print("Please select option to display.")

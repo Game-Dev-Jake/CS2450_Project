@@ -1,8 +1,10 @@
 # CS2450_Project
 
-## Control Operation
+## Functions
 
-- BRANCH (40): Continues program execution at the specified memory address.
-- BRANCHNEG (41): Branches to the specified memory address if the accumulator contains a negative value.
-- BRANCHZERO (42): Branches to the specified memory address if the accumulator contains zero.
-- HALT (43): Stops execution of the current BasicML program.
+| Function | Opcode | Description |
+|---|---:|---|
+| `ADD` | `30` | Add a word from a specific location in memory to the word in the accumulator. Leave the result in the accumulator. |
+| `SUBTRACT` | `31` | Subtract a word from a specific location in memory from the word in the accumulator. Leave the result in the accumulator. |
+| `DIVIDE` | `32` | Divide the word in the accumulator by a word from a specific location in memory. Leave the result in the accumulator. |
+| `MULTIPLY` | `33` | Multiply a word from a specific location in memory by the word in the accumulator. Leave the result in the accumulator. |
