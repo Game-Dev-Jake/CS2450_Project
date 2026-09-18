@@ -65,17 +65,23 @@ class VCPU():
     def STORE(self, address: int):
         pass
 
-    def ADD(self, address: int):
-        pass
+    def ADD(self, address: int, accum):
+        result = address + accum
+        return result
 
-    def SUBTRACT(self, address: int):
-        pass
+    def SUBTRACT(self, address: int, accum):
+        result = accum - address
+        return result
 
-    def DIVIDE(self, address: int):
-        pass
+    def DIVIDE(self, address: int, accum):
+        "Will currently always return an 'unknown opcode has been loaded' error because a 4 digit number divided by a 4 digit number is not a 4 digit number"
+        result = accum / address
+        return result
 
-    def MULTIPLY(self, address: int):
-        pass
+    def MULTIPLY(self, address: int, accum):
+        "Will currently always return an 'out of bounds' error because a 4 digit number multiplied by a 4 digit number is not a 4 digit number"
+        result = address * accum
+        return result
 
     def BRANCH(self, address: int):
         pass
