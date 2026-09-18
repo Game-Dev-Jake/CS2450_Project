@@ -4,15 +4,17 @@ from register import VRegister
 MIN_WORD = -9999
 MAX_WORD = 9999
 
+# True if `address` refers to a real memory location.
 def is_valid_address(address, register_count):
-        return isinstance(address, int) and 0 <= address <register_count
-    
+        return isinstance(address, int) and 0 <= address < register_count
+
+# true if the value is a UVSim word    
 def is_valid_word(value):
-    # true if the value is a UVSim word
     if isinstance(value, bool) or not isinstance(value, int):
         return False
     return MIN_WORD <= value <= MAX_WORD
-    
+
+# True if `value` is a legal UVSim word.    
 def format_word(value):
     sign = "+" if value >= 0 else "-"
     return "{}{:04d}".format(sign, abs(value))
@@ -50,9 +52,9 @@ class VCPU():
         print("An unkown opcode has been loaded.")
         pass
 
-    def read(self, address):
+    def READ(self, address):
         if not is_valid_address(address, self.memory.register_count):
-            self.output_fn("Error: read: address {} out of range".format(address))
+            self.output_fn("Error: READ: address {} out of range".format(address))
             return False
 
         while True:
@@ -91,8 +93,10 @@ class VCPU():
             )
             return False
         return True
+    print("READ")
+    print(READ)
 
-    def write(self, address):
+    def WRITE(self, address):
         value= self.memory.read_at(address)
         if value is None:
             self.output_fn(
@@ -101,8 +105,10 @@ class VCPU():
             return False
         self.output_fn(format_word(value))
         return True
+    print("WRITE")
+    print(WRITE)
 
-    def load(self,address):
+    def LOAD(self,address):
         value = self.memory.read_at(address)
         if value is None:
             self.output_fn(
@@ -115,8 +121,10 @@ class VCPU():
                 "ERROR: Load: invalid word {}".format(address)
             )
             return False
+    print("LOAD")
+    print(LOAD)
 
-    def store(self, address):
+    def STORE(self, address):
         value = self.accumulator.value
         if not is_valid_word(value):
             self.outout_fn("ERROR: Store: accumulator holds an invalid word")
@@ -128,6 +136,9 @@ class VCPU():
                 )
                 return False
         return True
+    print("STORE")
+    print(STORE)
+
 
     def ADD(self, address: int):
         pass
@@ -152,3 +163,4 @@ class VCPU():
 
     def HALT(self, address: int):
         pass
+
