@@ -59,13 +59,25 @@ class VCPU():
         pass
 
     def BRANCH(self, address: int):
-        pass
+        # branch to a valid address
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        self.current = address
 
     def BRANCHNEG(self, address: int):
-        pass
+        # branch when accumulator is negative
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        if self.accumulator.value < 0:
+            self.current = address
 
     def BRANCHZERO(self, address: int):
-        pass
+        # branch when accumulator equals zero
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        if self.accumulator.value == 0:
+            self.current = address
 
     def HALT(self, address: int):
-        pass
+        # halt stops execution
+        self.running = False
