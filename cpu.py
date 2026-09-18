@@ -198,13 +198,34 @@ class VCPU():
         print(f"Accumulator is now: {self.accum}")
 
     def BRANCH(self, address: int):
-        pass
+        # branch to a valid address
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        
+        self.current = address
+        print(f"BRANCH: jumping to address {address}")
 
     def BRANCHNEG(self, address: int):
-        pass
+        # branch when accumulator is negative
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        
+        if self.accumulator.value < 0:
+            self.current = address
+            print(f"BRANCHNEG: accumulator is negative, jumping to address {address}")
+        else:
+            print(f"BRANCHNEG: accumulator is not negative, continuing execution")
 
     def BRANCHZERO(self, address: int):
-        pass
+        # branch when accumulator equals zero
+        if not (0 <= address <= 99):
+            raise ValueError("Invalid branch address")
+        
+        if self.accumulator.value == 0:
+            self.current = address
+            print(f"BRANCHZERO: accumulator is zero, jumping to address {address}")
+        else:
+            print(f"BRANCHZERO: accumulator is not zero, continuing execution")
 
     def HALT(self, address: int):
         self.running = False
