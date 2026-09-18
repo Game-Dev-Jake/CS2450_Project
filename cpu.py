@@ -1,6 +1,5 @@
 from memory import VMemory
 from register import VRegister
-import sys
 
 MIN_WORD = -9999
 MAX_WORD = 9999
