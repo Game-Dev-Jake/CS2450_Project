@@ -68,14 +68,18 @@ class VCPU():
     def ADD(self, address: int, accum):
         """Adds the value at a given address to the accumulator,
         and stores the result back in the accumulator."""
-        result = address + accum
+        print(f"Adding {address} to {self.accum}")
+        result = address + self.accum
         self.accum = result
+        print(f"Accumulator is now: {self.accum}")
 
     def SUBTRACT(self, address: int, accum):
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
-        result = accum - address
+        print(f"Subtracting {address} from {self.accum}")
+        result = self.accum - address
         self.accum = result
+        print(f"Accumulator is now: {self.accum}")
 
     def DIVIDE(self, address: int, accum):
         """Divides the accumulator by the value at a given address, 
@@ -83,16 +87,20 @@ class VCPU():
         Result is be an integer by using floor division. 
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN UNKNOWN OPCODE ERROR***"""
-        result = accum // address
+        print(f"Dividing {self.accum} by {address}")
+        result = self.accum // address
         self.accum = result
+        print(f"Accumulator is now: {self.accum}")
 
     def MULTIPLY(self, address: int, accum):
         """Multiplies the accumulator by the vaule at a given address, 
         and stores the result back in the accumulator.
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN OUT OF BOUNDS ERROR***"""
-        result = address * accum
+        print(f"Multiplying {self.accum} by {address}")
+        result = address * self.accum
         self.accum = result
+        print(f"Accumulator is now: {self.accum}")
 
     def BRANCH(self, address: int):
         pass
