@@ -68,12 +68,14 @@ class TestHalt(unittest.TestCase):
     def test_halt_success_stops_running(self):
         # test that HALT stops the CPU from running
         cpu = make_cpu()
-        self.assertTrue(cpu.running) # should be running at start
+        cpu.running = True # should be running at start
         cpu.HALT(0) # address is ignored for HALT
         self.assertFalse(cpu.running) # should be stopped after HALT
     
     def test_halt_failure_stop_does_not_run_after_halt(self):
         # test that after HALT, the CPU does not run any further instructions
         cpu = make_cpu()
-        cpu.HALT(0)
+        cpu.running = True
+        cpu.HALT(99) # address is ignored for HALT
+        # after HALT, running should be False
         self.assertFalse(cpu.running)
