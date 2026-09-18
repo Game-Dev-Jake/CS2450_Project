@@ -74,32 +74,32 @@ class VCPU():
 
     def READ(self, address):
         if not is_valid_address(address, self.memory.register_count):
-            self.output_fn("Error: READ: address {} out of range".format(address))
+            print("Error: READ: address {} out of range".format(address))
             return False
 
         while True:
             try:
-                raw = self.input_fn(
+                raw = input(
                     "Enter a word from location {:02d}:".format(address)
                     )
             except (EOFError, KeyboardInterrupt):
-                self.output_fn("ERROR: Read: no input received")
+                print("ERROR: Read: no input received")
                 return False
             if raw is None or raw.strip() == "":
-                self.output_fn("ERROR: Read: no input received")
+                print("ERROR: Read: no input received")
                 return False
 
             try:
                 value = int(raw.strip())
             except ValueError:
-                self.output_fn(
+                print(
                     "ERROR: Read: '{}' is not a signed four-digit "
                     "number".format(raw.strip())
                 )
                 continue
 
             if not is_valid_word(value):
-                    self.output_fn(
+                    print(
                         "ERROR: READ: value must be between {} and {}".format(
                             MIN_WORD, MAX_WORD
                         )
@@ -107,31 +107,29 @@ class VCPU():
                     continue
             break
 
-        if not self.memory.write_at(address, value):
-            self.output_fn(
+        if not self.memory.write(address, value):
+            print(
                 "ERROR: READ: could not write to location {}".format(address)
             )
             return False
         return True
     print("READ")
-    print(READ)
 
     def WRITE(self, address):
-        value= self.memory.read_at(address)
+        value= self.memory.read(address)
         if value is None:
-            self.output_fn(
+            print(
                 "ERROR: Write: cound not read location {}".format(address)
             )
             return False
-        self.output_fn(format_word(value))
+        print(format_word(value))
         return True
     print("WRITE")
-    print(WRITE)
 
     def LOAD(self,address):
-        value = self.memory.read_at(address)
+        value = self.memory.read(address)
         if value is None:
-            self.output_fn(
+            print(
                 "ERROR: Load: cound not read location {}".format(address)
             )
             return False
@@ -142,31 +140,30 @@ class VCPU():
             )
             return False
     print("LOAD")
-    print(LOAD)
 
     def STORE(self, address):
         value = self.accumulator.value
         if not is_valid_word(value):
-            self.outout_fn("ERROR: Store: accumulator holds an invalid word")
+            print("ERROR: Store: accumulator holds an invalid word")
             return False
 
-        if not self.memory.write_at(address, value):
-                self.output_fn(
+        if not self.memory.write(address, value):
+                print(
                     "ERROR: Store: could not write to location {}".format(address)
                 )
                 return False
         return True
     print("STORE")
-    print(STORE)
-
 
     def ADD(self, address: int, accum):
         """Adds the value at a given address to the accumulator,
         and stores the result back in the accumulator."""
         print(f"Adding {address} to {self.accum}")
-        result = address + self.accum
-        self.accum = result
-        print(f"Accumulator is now: {self.accum}")
+        result = self.memory.read(address) + self.accumulator.value
+        if self.accumulator.set_value(result):
+            print(f"Accumulator is now: {self.accum}")
+        else:
+            print("Accumulator value is outside of range -9999:9999")
 
     def SUBTRACT(self, address: int, accum):
         """"Subtracts the value at a given address from the accumulator,

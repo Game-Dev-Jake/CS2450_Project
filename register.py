@@ -13,3 +13,10 @@ class VRegister():
         else:
             # TODO however we end up handling errors, this is the spot to check if a word has overflowed. -Jake
             pass
+
+    def set_value(self, value: int = 0) -> bool:
+        if value < 9999 and value > -9999:
+            self._value = value
+            return True
+        else:
+            return False
