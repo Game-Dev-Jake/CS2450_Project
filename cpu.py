@@ -88,7 +88,7 @@ class VCPU():
                 return False
             if raw is None or raw.strip() == "":
                 print("ERROR: Read: no input received")
-                return False
+                continue
 
             try:
                 value = int(raw.strip())
@@ -166,7 +166,7 @@ class VCPU():
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
         print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
-        result = self.memory.read(address) - self.accumulator.value
+        result = self.accumulator.value - self.memory.read(address)
         if self.accumulator.set_value(result):
             print(f"Accumulator is now: {self.accumulator.value}")
         else:
