@@ -1,7 +1,13 @@
 # CS2450_Project
 
 ## How to Use
-Upon running main.py, UVSim will automatically initialize a CPU, a 100 word memory, and an accumulator. The following option hierarchy will be presented to the user, and will require numbered input to select each option. Each input only requires the first character to contain the proper number option: 
+
+Using a program such as vscode, run main.py.
+
+Upon running main.py, UVSim will automatically initialize a CPU, a 100 word memory, and an accumulator. 
+
+The following option hierarchy will be presented to the user, and will require numbered input to select each option. 
+Each input only requires the first character to contain the proper number option:
 
 1] Load a file--------------Displays the file loading menu to the user.
     1] Load local file------Scans the UVSim_Files directory and displays the list of found files.
@@ -12,6 +18,8 @@ Upon running main.py, UVSim will automatically initialize a CPU, a 100 word memo
     2] Display Memory-------Iterates through all 100 memory locations and displays each value to the user.
 3] Run Program--------------Begins executing program from memory address 0.
 4] Exit---------------------Terminates the program.
+
+All UVSim BasicML files should be stored within the UVSim_Files and can be loaded into the program using option 1-1.
 
 ## Functions
 
