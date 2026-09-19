@@ -12,6 +12,9 @@ def main():
     running = True
     while running:
         user_input = input("1: Load a File\n2: Display Values\n3. Run Program\n4. Exit\n")
+        if not user_input.strip():
+            print("Invalid input, must enter 1, 2, 3 or 4.")
+            continue
         match user_input[0]:
             case "1":
                 loader.load_menu(main_mem)
@@ -20,6 +23,9 @@ def main():
                 print("Please select option to display.")
                 while valid:
                     display_input = input("1: Display Accumulator\n2: Display Memory\n3. Exit\n")
+                    if not display_input.strip():
+                        print("Invalid input, must enter 1, 2 or 3.")
+                        continue
                     match display_input[0]:
                         case "1":
                             print(f"Current Accumulator Value: {accumulator.value}")
@@ -27,15 +33,17 @@ def main():
                         case "2":
                             print(f"Current Memory Address Values: \n{main_mem.display_values()}")
                             valid = False
+                        case "3":
+                            valid = False
                         case _:
-                            print("Invalid input, must enter 1, 2.")
+                            print("Invalid input, must enter 1, 2, or 3.")
             case "3":
                 cpu.run()
             case "4":
                 print("Exiting Program")
                 running = False
             case _:
-                print("Invalid input, must enter 1, 2 or 3.")
+                print("Invalid input, must enter 1, 2, 3 or 4.")
 
 if __name__ == "__main__":
     main()

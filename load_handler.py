@@ -11,6 +11,9 @@ class LoadHandler():
         print("Load file menu, please select from the following options:")
         while running:
             user_input = input("1: Load local file\n2: Exit\n")
+            if not user_input.strip():
+                print("Invalid input, must enter 1 or 2.")
+                continue
             match user_input[0]:
                 case "1":
                     self.loaded_file = self.load_local()
@@ -40,7 +43,11 @@ class LoadHandler():
             user_input = input(f"\nSelect a file or 0 to Exit: (1-{len(files)}): ").strip()
             if user_input == "0":
                 return None
-            choice_index = int(user_input) - 1
+            try:
+                choice_index = int(user_input) - 1
+            except ValueError:
+                print("Invalid input, please enter a number.")
+                continue
 
             if 0 <= choice_index < len(files):
                 return files[choice_index]
