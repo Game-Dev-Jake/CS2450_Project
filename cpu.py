@@ -1,5 +1,6 @@
 from memory import VMemory
 from register import VRegister
+import math
 
 MIN_WORD = -9999
 MAX_WORD = 9999
@@ -158,7 +159,7 @@ class VCPU():
         print(f"Adding {self.memory.read(address)} to {self.accumulator.value}")
         result = self.memory.read(address) + self.accumulator.value
         if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value}")
+            print(f"Accumulator is now: {self.accumulator.value:04d}")
         else:
             print("Accumulator value is outside of range -9999:9999")
 
@@ -168,7 +169,7 @@ class VCPU():
         print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
         result = self.accumulator.value - self.memory.read(address)
         if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value}")
+            print(f"Accumulator is now: {self.accumulator.value:04d}")
         else:
             print("Accumulator value is outside of range -9999:9999")
 
@@ -179,9 +180,9 @@ class VCPU():
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN UNKNOWN OPCODE ERROR***"""
         print(f"Dividing {self.memory.read(address)} from {self.accumulator.value}")
-        result = self.memory.read(address) / self.accumulator.value
+        result:int = math.floor(self.memory.read(address) / self.accumulator.value)
         if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value}")
+            print(f"Accumulator is now: {self.accumulator.value:04d}")
         else:
             print("Accumulator value is outside of range -9999:9999")
 
@@ -193,7 +194,7 @@ class VCPU():
         print(f"Multiplying {self.memory.read(address)} by {self.accumulator.value}")
         result = self.memory.read(address) * self.accumulator.value
         if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value}")
+            print(f"Accumulator is now: {self.accumulator.value:04d}")
         else:
             print("Accumulator value is outside of range -9999:9999")
 

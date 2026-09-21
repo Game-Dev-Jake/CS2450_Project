@@ -10,7 +10,7 @@ class LoadHandler():
         running = True
         print("Load file menu, please select from the following options:")
         while running:
-            user_input = input("1: Load local file\n2: Exit\n")
+            user_input = input("1: Load local file\n2: Select file on directory\n3: Exit\n")
             if not user_input.strip():
                 print("Invalid input, must enter 1 or 2.")
                 continue
@@ -24,6 +24,8 @@ class LoadHandler():
                     else:
                         print("No file was loaded")
                 case "2":
+                    self.load_directory()
+                case "3":
                     running = False
                 case _:
                     print("Invalid input, please enter 1 or 2.")
@@ -53,6 +55,9 @@ class LoadHandler():
                 return files[choice_index]
             else:
                 print(f"You must select a file between 1 and {len(files)}")
+
+    def load_directory(self):
+        pass
 
     def load_memory(self, mem: VMemory):
         try:

@@ -28,7 +28,7 @@ def main():
                         continue
                     match display_input[0]:
                         case "1":
-                            print(f"Current Accumulator Value: {accumulator.value}")
+                            print(f"Current Accumulator Value: {accumulator.value:04d}")
                             valid = False
                         case "2":
                             print(f"Current Memory Address Values: \n{main_mem.display_values()}")
