@@ -179,8 +179,12 @@ class VCPU():
         Result is be an integer by using floor division. 
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN UNKNOWN OPCODE ERROR***"""
-        print(f"Dividing {self.memory.read(address)} from {self.accumulator.value}")
-        result:int = math.floor(self.memory.read(address) / self.accumulator.value)
+        print(f"Dividing {self.accumulator.value} from {self.memory.read(address)}")
+        if self.memory.read(address) != 0:
+            result:int = math.floor(self.accumulator.value / self.memory.read(address))
+        else:
+            print("Divide by Zero error. Cannot divide by Zero.")
+            return
         if self.accumulator.set_value(result):
             print(f"Accumulator is now: {self.accumulator.value:04d}")
         else:

@@ -1,3 +1,5 @@
+import math
+
 class VRegister():
     def __init__(self, value: int = 0):
         self._value = value
@@ -8,15 +10,18 @@ class VRegister():
 
     @value.setter
     def value(self, val):
-        if val < 10000 and val > -10000:
-            self._value = val
+        int_val = int(math.floor(val))
+        if int_val < 10000 and int_val > -10000:
+            self._value = int_val
         else:
-            # TODO however we end up handling errors, this is the spot to check if a word has overflowed. -Jake
-            pass
+            self._value = int(str(val)[:4])
 
+
+    #TODO We no longer need this function now that we truncate an invalid value.
     def set_value(self, value: int = 0) -> bool:
         if value < 10000 and value > -10000:
             self._value = value
             return True
         else:
+            self._value = int(str(value)[:4])
             return False
