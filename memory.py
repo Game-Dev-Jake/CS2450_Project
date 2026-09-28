@@ -11,11 +11,9 @@ class VMemory():
     def read(self, address: int) -> int:
         return self.registers[address].value
 
-    def write(self, address: int, value: int) -> bool:
-        if self.registers[address].set_value(value):
-            return True
-        else:
-            return False
+    def write(self, address: int, value: int):
+        self.registers[address].value = value
+
 
     def display_values(self) -> str:
         lines = []

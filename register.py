@@ -14,9 +14,12 @@ class VRegister():
         if int_val < 10000 and int_val > -10000:
             self._value = int_val
         else:
-            self._value = int(str(val)[:4])
+            magnitude = abs(val)
+            truncated_val = int(str(magnitude)[:4])
+            self._value = truncated_val if val >= 0 else - truncated_val
 
 
+"""
     #TODO We no longer need this function now that we truncate an invalid value.
     def set_value(self, value: int = 0) -> bool:
         if value < 10000 and value > -10000:
@@ -25,3 +28,4 @@ class VRegister():
         else:
             self._value = int(str(value)[:4])
             return False
+"""

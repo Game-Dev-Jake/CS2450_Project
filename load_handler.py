@@ -1,6 +1,7 @@
 from pathlib import Path
 from memory import VMemory
 
+#TODO Reset Memory When Loading
 class LoadHandler():
     def __init__(self):
         self.loaded_file: Path = None

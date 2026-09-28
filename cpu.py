@@ -133,12 +133,8 @@ class VCPU():
                 "ERROR: Load: cound not read location {}".format(address)
             )
             return False
+        self.accumulator.value = value
 
-        if not self.accumulator.set_value(value):
-            self.output_fn(
-                "ERROR: Load: invalid word {}".format(address)
-            )
-            return False
 
     def STORE(self, address):
         value = self.accumulator.value
@@ -158,20 +154,14 @@ class VCPU():
         and stores the result back in the accumulator."""
         print(f"Adding {self.memory.read(address)} to {self.accumulator.value}")
         result = self.memory.read(address) + self.accumulator.value
-        if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value:04d}")
-        else:
-            print("Accumulator value is outside of range -9999:9999")
+        self.accumulator.value = result
 
     def SUBTRACT(self, address: int):
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
         print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
         result = self.accumulator.value - self.memory.read(address)
-        if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value:04d}")
-        else:
-            print("Accumulator value is outside of range -9999:9999")
+        self.accumulator.value = result
 
     def DIVIDE(self, address: int):
         """Divides the accumulator by the value at a given address, 
@@ -183,12 +173,10 @@ class VCPU():
         if self.memory.read(address) != 0:
             result:int = math.floor(self.accumulator.value / self.memory.read(address))
         else:
+            raise ZeroDivisionError
             print("Divide by Zero error. Cannot divide by Zero.")
             return
-        if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value:04d}")
-        else:
-            print("Accumulator value is outside of range -9999:9999")
+        self.accumulator.value = result
 
     def MULTIPLY(self, address: int):
         """Multiplies the accumulator by the vaule at a given address, 
@@ -197,10 +185,7 @@ class VCPU():
            IN AN OUT OF BOUNDS ERROR***"""
         print(f"Multiplying {self.memory.read(address)} by {self.accumulator.value}")
         result = self.memory.read(address) * self.accumulator.value
-        if self.accumulator.set_value(result):
-            print(f"Accumulator is now: {self.accumulator.value:04d}")
-        else:
-            print("Accumulator value is outside of range -9999:9999")
+        self.accumulator.value = result
 
     def BRANCH(self, address: int):
         # branch to a valid address
