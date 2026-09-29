@@ -21,11 +21,13 @@ def format_word(value):
     return "{}{:04d}".format(sign, abs(value))
 
 class VCPU():
-    def __init__(self, accum: VRegister, mem: VMemory, cur: int = 0):
+    def __init__(self, accum: VRegister, mem: VMemory, cur: int = 0, run_limit: int = 999, output_fn = print):
+        self.output_fn = output_fn
         self.running = False
         self.accumulator: VRegister = accum
         self.memory: VMemory = mem
         self.current: int = cur
+        self.run_limit: int = run_limit
         self.opcode_table: dict = {
             10: self.READ,
             11: self.WRITE,
@@ -49,7 +51,7 @@ class VCPU():
             while self.running:
                 self.step()
                 run_count += 1
-                if run_count > 999:
+                if run_count > self.run_limit:
                     print("Runtime limit reached, aborting process.")
                     self.running = False
         else:
@@ -69,85 +71,35 @@ class VCPU():
         else:
             self.opcode_table[opcode](address)
 
+
     def UNKOWN(self, address: int):
         self.running = False
         print("An unkown opcode has been loaded.")
         pass
 
+
     def READ(self, address):
         if not is_valid_address(address, self.memory.register_count):
-            print("Error: READ: address {} out of range".format(address))
             return False
+        value = 1000 #Temp value until we figure out input.
+        #TODO Adjust input here, we need to gather input from a dialogue box.
+        self.memory.write(address, value)
 
-        while True:
-            try:
-                raw = input(
-                    "Enter a word to store in memory location {:02d}:".format(address)
-                    )
-            except (EOFError, KeyboardInterrupt):
-                print("ERROR: Read: no input received")
-                return False
-            if raw is None or raw.strip() == "":
-                print("ERROR: Read: no input received")
-                continue
-
-            try:
-                value = int(raw.strip())
-            except ValueError:
-                print(
-                    "ERROR: Read: '{}' is not a signed four-digit "
-                    "number".format(raw.strip())
-                )
-                continue
-
-            if not is_valid_word(value):
-                    print(
-                        "ERROR: READ: value must be between {} and {}".format(
-                            MIN_WORD, MAX_WORD
-                        )
-                    )
-                    continue
-            break
-
-        if not self.memory.write(address, value):
-            print(
-                "ERROR: READ: could not write to location {}".format(address)
-            )
-            return False
-        return True
 
     def WRITE(self, address):
-        value= self.memory.read(address)
-        if value is None:
-            print(
-                "ERROR: Write: cound not read location {}".format(address)
-            )
-            return False
-        print(format_word(value))
-        return True
+        value = self.memory.read(address)
+        self.output_fn(format_word(value))
+
 
     def LOAD(self,address):
         value = self.memory.read(address)
-        if value is None:
-            print(
-                "ERROR: Load: cound not read location {}".format(address)
-            )
-            return False
         self.accumulator.value = value
 
 
     def STORE(self, address):
         value = self.accumulator.value
-        if not is_valid_word(value):
-            print("ERROR: Store: accumulator holds an invalid word")
-            return False
+        self.memory.write(address, value)
 
-        if not self.memory.write(address, value):
-                print(
-                    "ERROR: Store: could not write to location {}".format(address)
-                )
-                return False
-        return True
 
     def ADD(self, address: int):
         """Adds the value at a given address to the accumulator,
@@ -156,12 +108,14 @@ class VCPU():
         result = self.memory.read(address) + self.accumulator.value
         self.accumulator.value = result
 
+
     def SUBTRACT(self, address: int):
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
         print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
         result = self.accumulator.value - self.memory.read(address)
         self.accumulator.value = result
+
 
     def DIVIDE(self, address: int):
         """Divides the accumulator by the value at a given address, 
@@ -173,10 +127,10 @@ class VCPU():
         if self.memory.read(address) != 0:
             result:int = math.floor(self.accumulator.value / self.memory.read(address))
         else:
-            raise ZeroDivisionError
-            print("Divide by Zero error. Cannot divide by Zero.")
-            return
+            result = 0
+            #TODO Error logging goes here - Divide by zero error, auto returns 0.
         self.accumulator.value = result
+
 
     def MULTIPLY(self, address: int):
         """Multiplies the accumulator by the vaule at a given address, 
@@ -187,6 +141,7 @@ class VCPU():
         result = self.memory.read(address) * self.accumulator.value
         self.accumulator.value = result
 
+
     def BRANCH(self, address: int):
         # branch to a valid address
         if not (0 <= address <= 99):
@@ -194,6 +149,7 @@ class VCPU():
         
         self.current = address
         print(f"BRANCH: jumping to address {address}")
+
 
     def BRANCHNEG(self, address: int):
         # branch when accumulator is negative
@@ -206,6 +162,7 @@ class VCPU():
         else:
             print(f"BRANCHNEG: accumulator is not negative, continuing execution")
 
+
     def BRANCHZERO(self, address: int):
         # branch when accumulator equals zero
         if not (0 <= address <= 99):
@@ -216,6 +173,7 @@ class VCPU():
             print(f"BRANCHZERO: accumulator is zero, jumping to address {address}")
         else:
             print(f"BRANCHZERO: accumulator is not zero, continuing execution")
+
 
     def HALT(self, address: int):
         self.running = False
