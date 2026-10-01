@@ -1,8 +1,10 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from cpu import VCPU, format_word
 from memory import VMemory
 from register import VRegister
+from load_handler import LoadHandler
+from pathlib import Path
 
 RED = "#ff0000"
 GREEN = "#00FF00"
@@ -85,7 +87,9 @@ class Application(tk.Tk):
         self.cpu.run()
 
     def on_button_stop(self):
-        pass
+        # Stop the CPU execution
+        self.cpu.running = False 
+        
 
     def on_button_step(self):
         self.cpu.step()
@@ -95,10 +99,30 @@ class Application(tk.Tk):
         self.load_memory_tree()
 
     def on_button_clear_accumulator(self):
-        pass
+        # clear the accumulator value to zero
+        self.accumulator.value = 0
+        self.label_accumulator_value.config(text="0000")
+        
 
     def on_file_load(self):
-        pass
+        # Open a file dialog so the user can select a BasicML program
+        file_path = filedialog.askopenfilename(
+            title="Select a program file",
+            filetypes=[("Text Files","*.txt"), ("All Files", "*.*")]
+        )
+        
+        # if the user cancels the file selection, stop the function
+        if not file_path:
+            return  
+        
+        # create a loader and give it the file selected by the user
+        loader = LoadHandler()
+        loader.loaded_file = Path(file_path)
+        
+        # load the selected program into UVSim memory
+        loader.load_memory(self.memory)
+        # refresh the GUI so it displays the newly loaded memory
+        self.load_memory_tree()
 
     def on_file_reset_program(self):
         pass
