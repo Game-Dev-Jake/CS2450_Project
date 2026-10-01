@@ -3,6 +3,12 @@ import math
 class VRegister():
     def __init__(self, value: int = 0):
         self._value = value
+        self._observers = []
+
+
+    def add_observer(self, callback):
+        self._observers.append(callback)
+    
 
     @property
     def value(self):
@@ -17,3 +23,6 @@ class VRegister():
             magnitude = abs(val)
             truncated_val = int(str(magnitude)[:4])
             self._value = truncated_val if val >= 0 else -truncated_val
+
+        for callback in self._observers:
+            callback(self._value)

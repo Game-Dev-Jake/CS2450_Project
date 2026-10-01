@@ -26,7 +26,8 @@ class VCPU():
         self.running = False
         self.accumulator: VRegister = accum
         self.memory: VMemory = mem
-        self.current: int = cur
+        self._current: int = cur
+        self._observers: list = []
         self.run_limit: int = run_limit
         self.opcode_table: dict = {
             10: self.READ,
@@ -43,10 +44,24 @@ class VCPU():
             43: self.HALT
         }
 
+    def add_observers(self, callback):
+        self._observers.append(callback)
+
+    @property
+    def current(self):
+        return self._current
+
+    @current.setter
+    def current(self, val):
+        self._current = val
+        for callback in self._observers:
+            callback(self._current)
+
     def run(self, count: int = 0):
         run_count: int = 0
         self.running = True
         self.current = 0
+        self.accumulator.value = 0
         if count == 0:
             while self.running:
                 self.step()
@@ -177,3 +192,5 @@ class VCPU():
 
     def HALT(self, address: int):
         self.running = False
+        self.accumulator.value = 0
+        self.current = 0

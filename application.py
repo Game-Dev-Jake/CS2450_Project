@@ -13,6 +13,8 @@ class Application(tk.Tk):
     def __init__(self, title: str, cpu: VCPU, memory: VMemory, accumulator: VRegister, width: int = 600, height: int = 600):
         super().__init__()
 
+        self._current_highlight_iid = None
+        
         self.title(title)
         self.geometry(f"{width}x{height}")
 
@@ -20,7 +22,11 @@ class Application(tk.Tk):
         self.memory = memory
         self.accumulator = accumulator
 
+        self.cpu.add_observers(self.on_current_changed)
+
         self.resizable(False,False)
+
+        self.accumulator.add_observer(self.on_accumulator_changed)
 
         menubar = tk.Menu(self)
         self.file_menu = tk.Menu(menubar, tearoff=0)
@@ -66,7 +72,7 @@ class Application(tk.Tk):
         self.label_accumulator = tk.Label(self, text="Accumulator:")
         self.label_accumulator.place(x=60, y=289, width=130, height=26)
 
-        self.label_accumulator_value = tk.Label(self, text="0000", font=("Helvetica", 10, "bold"), state="disabled")
+        self.label_accumulator_value = tk.Label(self, text="+0000", font=("Helvetica", 10, "bold"), state="disabled")
         self.label_accumulator_value.place(x=170, y=289, width=90, height=26)
 
         self.label_status_indicator = tk.Label(self, text="Stopped", fg=RED)
@@ -79,11 +85,23 @@ class Application(tk.Tk):
 
         self.load_memory_tree()
 
+        self.on_current_changed(self.cpu.current)
+
+    def on_current_changed(self, new_current):
+        i = str(new_current)
+        if self.memory_tree.exists(i):
+            self.memory_tree.selection_set(i)
+            self.memory_tree.see(i)
+
+    def on_accumulator_changed(self, new_value):
+        self.label_accumulator_value.config(text=format_word(new_value))
+
     def log_to_console(self, message):
         self.listbox_user_console.insert("end", str(message))
         self.listbox_user_console.see("end")
 
     def on_button_run(self):
+        self.listbox_user_console.delete(0, tk.END)
         self.cpu.run()
 
     def on_button_stop(self):
@@ -101,7 +119,7 @@ class Application(tk.Tk):
     def on_button_clear_accumulator(self):
         # clear the accumulator value to zero
         self.accumulator.value = 0
-        self.label_accumulator_value.config(text="0000")
+        self.label_accumulator_value.config(text="-0000")
         
 
     def on_file_load(self):
@@ -118,6 +136,10 @@ class Application(tk.Tk):
         # create a loader and give it the file selected by the user
         loader = LoadHandler()
         loader.loaded_file = Path(file_path)
+
+        # Clear memory and user console before loading
+        self.on_button_clear_memory()
+        self.listbox_user_console.delete(0, tk.END)
         
         # load the selected program into UVSim memory
         loader.load_memory(self.memory)
@@ -137,4 +159,4 @@ class Application(tk.Tk):
         self.memory_tree.delete(*self.memory_tree.get_children())
         for address in range(self.memory.register_count):
             value = self.memory.read(address)
-            self.memory_tree.insert("", "end", values=(f"{address:02d}", format_word(value)))
+            self.memory_tree.insert("", "end", iid=str(address), values=(f"{address:02d}", format_word(value)))
