@@ -1,6 +1,7 @@
 from memory import VMemory
 from register import VRegister
 from collections.abc import Callable
+from datetime import datetime
 import math
 
 MIN_WORD = -9999
@@ -22,12 +23,13 @@ def format_word(value):
     return "{}{:04d}".format(sign, abs(value))
 
 class VCPU():
-    def __init__(self, accum: VRegister, mem: VMemory, cur: int = 0, run_limit: int = 999, output_fn = print):
+    def __init__(self, accum: VRegister, mem: VMemory, logs: list[str], cur: int = 0, run_limit: int = 999, output_fn = print):
         self.output_fn = output_fn
         self.running = False
         self.accumulator: VRegister = accum
         self.memory: VMemory = mem
         self._current: int = cur
+        self.logs = logs
         self._current_observer: list = []
         self._read_observer: Callable
         self.run_limit: int = run_limit
@@ -72,7 +74,7 @@ class VCPU():
                 self.step()
                 run_count += 1
                 if run_count > self.run_limit:
-                    print("Runtime limit reached, aborting process.")
+                    self.log("Runtime limit reached, aborting process.")
                     self.running = False
         else:
             for i in range(count):
@@ -84,7 +86,8 @@ class VCPU():
         opcode, address = divmod(word, 100)
         self.current +=1
         if opcode == 0:
-            print("Program reached empty register, aborting execution.")
+            
+            self.log("Program reached empty register, aborting execution.")
             self.HALT(0)
         elif opcode not in self.opcode_table:
             self.UNKOWN(address)
@@ -94,7 +97,7 @@ class VCPU():
 
     def UNKOWN(self, address: int):
         self.running = False
-        print("An unkown opcode has been loaded.")
+        self.log("An unkown opcode has been loaded.")
         pass
 
 
@@ -123,7 +126,7 @@ class VCPU():
     def ADD(self, address: int):
         """Adds the value at a given address to the accumulator,
         and stores the result back in the accumulator."""
-        print(f"Adding {self.memory.read(address)} to {self.accumulator.value}")
+        self.log(f"Adding {self.memory.read(address)} to {self.accumulator.value}")
         result = self.memory.read(address) + self.accumulator.value
         self.accumulator.value = result
 
@@ -131,7 +134,7 @@ class VCPU():
     def SUBTRACT(self, address: int):
         """"Subtracts the value at a given address from the accumulator,
         and stores the result back in the accumulator."""
-        print(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
+        self.log(f"Subtracting {self.memory.read(address)} from {self.accumulator.value}")
         result = self.accumulator.value - self.memory.read(address)
         self.accumulator.value = result
 
@@ -142,7 +145,7 @@ class VCPU():
         Result is be an integer by using floor division. 
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN UNKNOWN OPCODE ERROR***"""
-        print(f"Dividing {self.accumulator.value} from {self.memory.read(address)}")
+        self.log(f"Dividing {self.accumulator.value} from {self.memory.read(address)}")
         if self.memory.read(address) != 0:
             result:int = math.floor(self.accumulator.value / self.memory.read(address))
         else:
@@ -156,7 +159,7 @@ class VCPU():
         and stores the result back in the accumulator.
         ***IF THE RESULT IS PUSHED TO A REGISTER IT WILL LIKELY RESULT 
            IN AN OUT OF BOUNDS ERROR***"""
-        print(f"Multiplying {self.memory.read(address)} by {self.accumulator.value}")
+        self.log(f"Multiplying {self.memory.read(address)} by {self.accumulator.value}")
         result = self.memory.read(address) * self.accumulator.value
         self.accumulator.value = result
 
@@ -167,7 +170,7 @@ class VCPU():
             raise ValueError("Invalid branch address")
         
         self.current = address
-        print(f"BRANCH: jumping to address {address}")
+        self.log(f"BRANCH: jumping to address {address}")
 
 
     def BRANCHNEG(self, address: int):
@@ -177,9 +180,9 @@ class VCPU():
         
         if self.accumulator.value < 0:
             self.current = address
-            print(f"BRANCHNEG: accumulator is negative, jumping to address {address}")
+            self.log(f"BRANCHNEG: accumulator is negative, jumping to address {address}")
         else:
-            print(f"BRANCHNEG: accumulator is not negative, continuing execution")
+            self.log(f"BRANCHNEG: accumulator is not negative, continuing execution")
 
 
     def BRANCHZERO(self, address: int):
@@ -189,12 +192,18 @@ class VCPU():
         
         if self.accumulator.value == 0:
             self.current = address
-            print(f"BRANCHZERO: accumulator is zero, jumping to address {address}")
+            self.log(f"BRANCHZERO: accumulator is zero, jumping to address {address}")
         else:
-            print(f"BRANCHZERO: accumulator is not zero, continuing execution")
+            self.log(f"BRANCHZERO: accumulator is not zero, continuing execution")
 
 
     def HALT(self, address: int):
         self.running = False
         self.accumulator.value = 0
         self.current = 0
+
+
+    def log(self, log_message: str = ""):
+            now = datetime.now()
+            current_time: str = now.strftime("%Y-%m-%d %H:%M:%S")
+            self.logs.append(current_time + " " + log_message)

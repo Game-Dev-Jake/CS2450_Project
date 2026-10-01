@@ -1,10 +1,12 @@
 from register import VRegister
 from collections.abc import Callable
+from datetime import datetime
 
 class VMemory():
-    def __init__(self, count: int = 1):
+    def __init__(self, logs: list[str], count: int = 1):
         self.registers: list = []
         self.register_count: int = count
+        self.logs = logs
         self._memory_observer: Callable = None
         for i in range(self.register_count):
             register = VRegister()
@@ -19,8 +21,7 @@ class VMemory():
                 return 0
             return self.registers[address].value
         else:
-            pass
-            #TODO Error log that WRITE call attempted to write an invalid address.
+            self.log("ERROR: Attempted to write to an invalid address.")
 
 
     def write(self, address: int, value: int):
@@ -29,8 +30,7 @@ class VMemory():
             if self._memory_observer:
                 self._memory_observer(address, self.registers[address].value)
         else:
-            pass
-            #TODO Error log that WRITE call attempted to write an invalid address.
+            self.log("ERROR: Attempted to write to an invalid address.")
 
 
     def is_valid_address(self, address):
@@ -47,3 +47,8 @@ class VMemory():
         for index, register in enumerate(self.registers):
             lines.append(f"Register: {index}. Value: {register.value:04d}")
         return "\n".join(lines)
+
+    def log(self, log_message: str = ""):
+        now = datetime.now()
+        current_time: str = now.strftime("%Y-%m-%d %H:%M:%S")
+        self.logs.append(current_time + " " + log_message)

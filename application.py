@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, simpledialog
+from tkinter import ttk, filedialog, simpledialog, scrolledtext
 from cpu import VCPU, format_word
 from memory import VMemory
 from register import VRegister
@@ -10,8 +10,10 @@ RED = "#ff0000"
 GREEN = "#00FF00"
 
 class Application(tk.Tk):
-    def __init__(self, title: str, cpu: VCPU, memory: VMemory, accumulator: VRegister, width: int = 600, height: int = 600):
+    def __init__(self, title: str, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
         super().__init__()
+
+        self.logs = logs
 
         self._current_highlight_iid = None
         
@@ -89,10 +91,12 @@ class Application(tk.Tk):
 
         self.on_current_changed(self.cpu.current)
 
+
     def on_memory_changed(self, address: int, value: int):
         iid = str(address)
         if self.memory_tree.exists(iid):
             self.memory_tree.set(iid, "col2", format_word(value))
+
 
     def on_read_prompt(self) -> int:
         user_input = simpledialog.askinteger("Number Input","Please enter an integer between -9999 and +9999, default 0000:", minvalue=-9999, maxvalue=9999)
@@ -100,22 +104,27 @@ class Application(tk.Tk):
             return user_input
         else: return 0
 
+
     def on_current_changed(self, new_current):
         i = str(new_current)
         if self.memory_tree.exists(i):
             self.memory_tree.selection_set(i)
             self.memory_tree.see(i)
 
+
     def on_accumulator_changed(self, new_value):
         self.label_accumulator_value.config(text=format_word(new_value))
+
 
     def log_to_console(self, message):
         self.listbox_user_console.insert("end", str(message))
         self.listbox_user_console.see("end")
 
+
     def on_button_run(self):
         self.listbox_user_console.delete(0, tk.END)
         self.cpu.run()
+
 
     def on_button_stop(self):
         # Stop the CPU execution
@@ -125,8 +134,10 @@ class Application(tk.Tk):
     def on_button_step(self):
         self.cpu.step()
 
+
     def on_button_clear_memory(self):
         self.memory.reset_memory()
+
 
     def on_button_clear_accumulator(self):
         # clear the accumulator value to zero
@@ -162,14 +173,32 @@ class Application(tk.Tk):
         self.accumulator.value = 0
         self.cpu.current = 0
 
+
     def on_file_reset_program(self):
-        pass
+        self.memory.reset_memory()
+        self.accumulator.value = 0
+        self.listbox_user_console.delete(0, tk.END)
+
 
     def on_file_logs(self):
-        pass
+        log_window = tk.Toplevel(self)
+        log_window.title("Logs")
+        log_window.geometry("600x300")
+
+        log_text = scrolledtext.ScrolledText(log_window, wrap="word")
+        log_text.pack(fill="both", expand=True)
+
+        if self.cpu.logs:
+            log_text.insert("end","\n".join(self.cpu.logs))
+        else:
+            log_text.insert("end", "No logs recorded.")
+
+        log_text.config(state="disabled")
+
 
     def on_file_exit(self):
-        pass
+        self.quit()
+
 
     def load_memory_tree(self):
         self.memory_tree.delete(*self.memory_tree.get_children())

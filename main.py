@@ -5,11 +5,12 @@ from application import Application
 
 def main():
     loader = LoadHandler()
+    logs: list[str] = []
     memory_count: int = 100
-    main_mem: VMemory = VMemory(memory_count)
+    main_mem: VMemory = VMemory(logs,memory_count)
     accumulator: VRegister = VRegister(0)
-    cpu: VCPU = VCPU(accumulator,main_mem)
-    app = Application("UVSim Application",cpu,main_mem,accumulator)
+    cpu: VCPU = VCPU(accumulator,main_mem,logs)
+    app = Application("UVSim Application",cpu,main_mem,accumulator,logs)
     app.mainloop()
 
 if __name__ == "__main__":
