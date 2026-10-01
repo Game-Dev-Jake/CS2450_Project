@@ -1,13 +1,17 @@
 from register import VRegister
+from collections.abc import Callable
 
 class VMemory():
     def __init__(self, count: int = 1):
         self.registers: list = []
         self.register_count: int = count
+        self._memory_observer: Callable = None
         for i in range(self.register_count):
             register = VRegister()
             self.registers.append(register)
 
+    def set_memory_observer(self, callable):
+        self._memory_observer = callable
 
     def read(self, address: int) -> int:
         if self.is_valid_address(address):
@@ -22,6 +26,8 @@ class VMemory():
     def write(self, address: int, value: int):
         if self.is_valid_address(address):
             self.registers[address].value = value
+            if self._memory_observer:
+                self._memory_observer(address, self.registers[address].value)
         else:
             pass
             #TODO Error log that WRITE call attempted to write an invalid address.
@@ -33,7 +39,7 @@ class VMemory():
 
     def reset_memory(self):
         for i in range(self.register_count):
-            self.registers[i].value = 0
+            self.write(i, 0)
 
     
     def display_values(self) -> str:

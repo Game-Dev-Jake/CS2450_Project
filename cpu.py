@@ -1,5 +1,6 @@
 from memory import VMemory
 from register import VRegister
+from collections.abc import Callable
 import math
 
 MIN_WORD = -9999
@@ -27,7 +28,8 @@ class VCPU():
         self.accumulator: VRegister = accum
         self.memory: VMemory = mem
         self._current: int = cur
-        self._observers: list = []
+        self._current_observer: list = []
+        self._read_observer: Callable
         self.run_limit: int = run_limit
         self.opcode_table: dict = {
             10: self.READ,
@@ -44,8 +46,11 @@ class VCPU():
             43: self.HALT
         }
 
-    def add_observers(self, callback):
-        self._observers.append(callback)
+    def add_current_observer(self, callback):
+        self._current_observer.append(callback)
+
+    def add_read_observer(self, callback):
+        self._read_observer = callback
 
     @property
     def current(self):
@@ -54,7 +59,7 @@ class VCPU():
     @current.setter
     def current(self, val):
         self._current = val
-        for callback in self._observers:
+        for callback in self._current_observer:
             callback(self._current)
 
     def run(self, count: int = 0):
@@ -96,8 +101,7 @@ class VCPU():
     def READ(self, address):
         if not is_valid_address(address, self.memory.register_count):
             return False
-        value = 1000 #Temp value until we figure out input.
-        #TODO Adjust input here, we need to gather input from a dialogue box.
+        value: int = self._read_observer()
         self.memory.write(address, value)
 
 

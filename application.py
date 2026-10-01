@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, simpledialog
 from cpu import VCPU, format_word
 from memory import VMemory
 from register import VRegister
@@ -22,11 +22,13 @@ class Application(tk.Tk):
         self.memory = memory
         self.accumulator = accumulator
 
-        self.cpu.add_observers(self.on_current_changed)
+        self.cpu.add_current_observer(self.on_current_changed)
+        self.cpu.add_read_observer(self.on_read_prompt)
+        self.memory._memory_observer = self.on_memory_changed
 
         self.resizable(False,False)
 
-        self.accumulator.add_observer(self.on_accumulator_changed)
+        self.accumulator.add_accumulator_observer(self.on_accumulator_changed)
 
         menubar = tk.Menu(self)
         self.file_menu = tk.Menu(menubar, tearoff=0)
@@ -87,6 +89,17 @@ class Application(tk.Tk):
 
         self.on_current_changed(self.cpu.current)
 
+    def on_memory_changed(self, address: int, value: int):
+        iid = str(address)
+        if self.memory_tree.exists(iid):
+            self.memory_tree.set(iid, "col2", format_word(value))
+
+    def on_read_prompt(self) -> int:
+        user_input = simpledialog.askinteger("Number Input","Please enter an integer between -9999 and +9999, default 0000:", minvalue=-9999, maxvalue=9999)
+        if user_input != None:
+            return user_input
+        else: return 0
+
     def on_current_changed(self, new_current):
         i = str(new_current)
         if self.memory_tree.exists(i):
@@ -114,12 +127,10 @@ class Application(tk.Tk):
 
     def on_button_clear_memory(self):
         self.memory.reset_memory()
-        self.load_memory_tree()
 
     def on_button_clear_accumulator(self):
         # clear the accumulator value to zero
         self.accumulator.value = 0
-        self.label_accumulator_value.config(text="-0000")
         
 
     def on_file_load(self):
@@ -143,8 +154,13 @@ class Application(tk.Tk):
         
         # load the selected program into UVSim memory
         loader.load_memory(self.memory)
-        # refresh the GUI so it displays the newly loaded memory
-        self.load_memory_tree()
+
+        # Make sure the first element is selected
+        self.memory_tree.selection_set(0)
+        self.memory_tree.see(0)
+
+        self.accumulator.value = 0
+        self.cpu.current = 0
 
     def on_file_reset_program(self):
         pass

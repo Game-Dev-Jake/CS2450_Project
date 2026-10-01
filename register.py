@@ -6,7 +6,7 @@ class VRegister():
         self._observers = []
 
 
-    def add_observer(self, callback):
+    def add_accumulator_observer(self, callback):
         self._observers.append(callback)
     
 
