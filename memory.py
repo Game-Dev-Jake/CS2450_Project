@@ -41,13 +41,6 @@ class VMemory():
         for i in range(self.register_count):
             self.write(i, 0)
 
-    
-    def display_values(self) -> str:
-        lines = []
-        for index, register in enumerate(self.registers):
-            lines.append(f"Register: {index}. Value: {register.value:04d}")
-        return "\n".join(lines)
-
     def log(self, log_message: str = ""):
         now = datetime.now()
         current_time: str = now.strftime("%Y-%m-%d %H:%M:%S")
