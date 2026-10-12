@@ -1,6 +1,7 @@
 import tkinter as tk
 from datetime import datetime
 from tkinter import filedialog, messagebox, scrolledtext, ttk
+from pathlib import Path
 
 RUNNING_COLOR = "#16a34a"      # green
 STOPPED_COLOR = "#dc2626"      # red
@@ -227,9 +228,47 @@ class FileMenuActions:
             question = "Are you sure you want to exit UVSim?"
 
         if not messagebox.askyesno("Exit UVSim", question, parent=self.root):
-            return                                   # user changed their mind
+            # user changed their mind
+            return 
 
-        if self.is_running:                          # 1. stop the program
+        # 1. stop the program
+        if self.is_running:                          
             self.stop_program()
-        self._close_logs()                           # 2. close the Logs window
-        self.root.destroy()                          # 3. close UVSim
+        # 2. close the Logs window
+        self._close_logs()
+        # 3. close UVSim
+        self.root.destroy()
+
+    def on_file_save(self):
+        if not hasattr(self, 'current_file_path') or self.current_file_path is None:
+            self.on_file_save_as()
+        else:
+            self._perform_save(self.current_file_path)
+
+    def on_file_save_as(self):
+        path_str = filedialog.asksaveasfilename(
+            title = "Save Program As",
+            defaultextension = ".txt",
+            filetypes = [("Test files", "*.txt"), ("All files", "*.*")]
+        )
+
+        if not path_str:
+            return
+
+        self.current_file_path = Path(path_str)
+        self._perform_save(self.current_file_path)
+
+    def _perform_save(self, file_path: Path):
+        if not hasattr(self, "save_handler") or self.save_handler is None:
+            from save_handler import SaveHandler
+            self.save_handler = SaveHandler()
+
+        success = self.save_handler.save_memory(self.memory, file_path)
+
+        if success:
+            msg = f"Program successfully saved to {file_path.name}"
+            self.main_console.write_message(msg)
+            self.add_log(msg)
+            messagebox.showerror("Saved", f"File saved successfully:\n{file_path}")
+        else:
+            messagebox.showerror("Error",f"Failed to save file:\n{file_path}")
