@@ -1,6 +1,8 @@
 import tkinter as tk
+import dialogue_boxes as dialogues
 from tkinter import ttk, filedialog, simpledialog, scrolledtext
 from cpu import VCPU, format_word
+from load_handler import LoadHandler
 from memory import VMemory
 from register import VRegister
 from load_handler import LoadHandler
@@ -11,14 +13,17 @@ RED = "#ff0000"
 GREEN = "#00FF00"
 
 class Application(tk.Tk):
-    def __init__(self, title: str, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
+    def __init__(self, title: str, loader: LoadHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
         super().__init__()
+
+        self.loader = loader
 
         config = Config.load_file("config.json")
         self.colors = {
             "primary": config.theme.colors.primary,
             "secondary": config.theme.colors.secondary
         }
+
         self.themed: list[tuple[tk.Widget, dict[str, str]]] = []
 
         self.themed_widget(self, bg="primary")
@@ -110,7 +115,7 @@ class Application(tk.Tk):
 
         self.listbox_user_console = tk.Listbox(self)
         self.listbox_user_console.place(x=20, y=330, width=300, height=250)
-        self.themed_widget(self.listbox_user_console, fg="primary")
+        self.themed_widget(self.listbox_user_console, fg="primary", bg="secondary")
 
         self.cpu.output_fn = self.log_to_console
 
@@ -128,7 +133,7 @@ class Application(tk.Tk):
             widget.config(**{opt: self.colors[role] for opt, role in roles.items()})
 
     def on_window_theme(self):
-        pass
+        dialogues.DialogueTheme(self)
     
     def on_memory_changed(self, address: int, value: int):
         iid = str(address)

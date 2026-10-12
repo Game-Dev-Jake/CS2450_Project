@@ -16,3 +16,9 @@ class LoadHandler():
             print("Failed to open file from directory.")
         except ValueError as e:
             print(f"Invalid word in the file at line {index + 1}: {line!r}")
+
+    def get_json_value(self):
+        pass
+
+    def save_json_value(self):
+        pass

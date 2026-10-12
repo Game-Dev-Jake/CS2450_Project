@@ -10,7 +10,7 @@ def main():
     main_mem: VMemory = VMemory(logs,memory_count)
     accumulator: VRegister = VRegister(0)
     cpu: VCPU = VCPU(accumulator,main_mem,logs)
-    app = Application("UVSim Application",cpu,main_mem,accumulator,logs)
+    app = Application("UVSim Application",loader,cpu,main_mem,accumulator,logs)
     app.mainloop()
 
 if __name__ == "__main__":
