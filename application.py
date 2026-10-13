@@ -16,13 +16,12 @@ class Application(tk.Tk):
     def __init__(self, title: str, loader: LoadHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
         super().__init__()
 
-        self.loader = loader
-
-        config = Config.load_file("config.json")
         self.colors = {
-            "primary": config.theme.colors.primary,
-            "secondary": config.theme.colors.secondary
+            "primary": "",
+            "secondary": ""
         }
+
+        self.loader = loader
 
         self.themed: list[tuple[tk.Widget, dict[str, str]]] = []
 
@@ -123,7 +122,13 @@ class Application(tk.Tk):
 
         self.on_current_changed(self.cpu.current)
 
+        self.load_theme()
         self.apply_theme()
+
+    def load_theme(self):
+        config = Config.load_file("config.json")
+        self.colors["primary"] = config.theme.colors.primary
+        self.colors["secondary"] = config.theme.colors.secondary
 
     def themed_widget(self, widget, **roles):
         self.themed.append((widget,roles))
