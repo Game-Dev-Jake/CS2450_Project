@@ -9,7 +9,7 @@ class SaveHandler():
 
     def save_memory(self, mem: VMemory, file_path: Path) -> bool:
         try:
-            with file_path.open("w", encoding = "utf-8") as file:
+            with file_path.open("w", encoding="utf-8") as file:
                 for index in range(mem.register_count):
                     word = mem.read(index)
                     file.write(f"{word}\n")

@@ -5,6 +5,7 @@ from memory import VMemory
 from register import VRegister
 from load_handler import LoadHandler
 from pathlib import Path
+from save_handler import SaveHandler
 
 RED = "#ff0000"
 GREEN = "#00FF00"
@@ -37,8 +38,8 @@ class Application(tk.Tk):
         self.file_menu.add_command(label="Load", command=self.on_file_load)
         self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
         self.file_menu.add_command(label="Logs", command=self.on_file_logs)
-        self.file_menu.add_command(label="Save", command=self.on_file_logs)
-        self.file_menu.add_command(label="Save As", command=self.on_file_logs)
+        self.file_menu.add_command(label="Save", command=self.on_file_save)
+        self.file_menu.add_command(label="Save As", command=self.on_file_save_as)
         self.file_menu.add_command(label="Exit", command=self.on_file_exit)
         menubar.add_cascade(label="File", menu=self.file_menu)
         self.configure(menu=menubar)
@@ -207,3 +208,37 @@ class Application(tk.Tk):
         for address in range(self.memory.register_count):
             value = self.memory.read(address)
             self.memory_tree.insert("", "end", iid=str(address), values=(f"{address:02d}", format_word(value)))
+
+    def on_file_save(self):
+            #print("DEBUG: save button was clicked")
+            if not hasattr(self, 'current_file_path') or self.current_file_path is None:
+                self.on_file_save_as()
+            else:
+                self._perform_save(self.current_file_path)
+
+    def on_file_save_as(self):
+        path_str = filedialog.asksaveasfilename(
+            title = "Save Program As",
+            defaultextension = ".txt",
+            filetypes = [("Test files", "*.txt"), ("All files", "*.*")]
+        )
+
+        if not path_str:
+            return
+
+        self.current_file_path = Path(path_str)
+        self._perform_save(self.current_file_path)
+
+    def _perform_save(self, file_path: Path):
+        handler = SaveHandler()
+
+        success = handler.save_memory(self.memory, file_path)
+
+        if success:
+            msg = f"Program successfully saved to {file_path.name}"
+            self.log_to_console(msg)
+            if hasattr(self, "cpu") and hasattr(self.cpu, "logs"):
+                self.cpu.logs.append(msg)
+            messagebox.showinfo("Saved", f"File saved successfully:\n{file_path}")
+        else:
+            messagebox.showerror("Error", f"Failed to save file:\n{file_path}")
