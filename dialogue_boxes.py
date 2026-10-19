@@ -53,8 +53,8 @@ class DialogueTheme(tk.Toplevel):
             self.apply_theme()
 
     def on_button_save_theme(self):
-        self.app.loader.save_json_value("primary",self.app.colors["primary"])
-        self.app.loader.save_json_value("secondary",self.app.colors["secondary"])
+        self.app.loader.save_json_value(["theme", "colors", "primary"],self.app.colors["primary"])
+        self.app.loader.save_json_value(["theme", "colors", "secondary"],self.app.colors["secondary"])
         self.destroy()
 
     def on_button_cancel_theme(self):
