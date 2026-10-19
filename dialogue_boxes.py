@@ -32,11 +32,11 @@ class DialogueTheme(tk.Toplevel):
         self.button_save_theme = tk.Button(self, text="Save", command=self.on_button_save_theme)
         self.button_save_theme.place(x=10, y=110, width=80, height=25)
 
-        self.button_ok_theme = tk.Button(self, text="Ok", command=self.destroy)
-        self.button_ok_theme.place(x=95, y=110, width=80, height=25)
+        self.button_reset_theme = tk.Button(self, text="Reset", command=self.on_button_reset_theme)
+        self.button_reset_theme.place(x=95, y=110, width=80, height=25)
 
-        self.button_cancel_theme = tk.Button(self, text="Cancel", command=self.on_button_cancel_theme)
-        self.button_cancel_theme.place(x=180, y=110, width=80, height=25)
+        self.button_ok_theme = tk.Button(self, text="Ok", command=self.destroy)
+        self.button_ok_theme.place(x=180, y=110, width=80, height=25)
 
     def on_button_set_primary_color(self):
         color_info = colorchooser.askcolor(title="Select a primary color", color=self.app.colors["primary"])
@@ -55,13 +55,11 @@ class DialogueTheme(tk.Toplevel):
     def on_button_save_theme(self):
         self.app.loader.save_json_value(["theme", "colors", "primary"],self.app.colors["primary"])
         self.app.loader.save_json_value(["theme", "colors", "secondary"],self.app.colors["secondary"])
-        self.destroy()
 
-    def on_button_cancel_theme(self):
+    def on_button_reset_theme(self):
         self.app.load_theme()
         self.app.apply_theme()
         self.apply_theme()
-        self.destroy()
 
     def apply_theme(self):
         self.frame_primary_color.config(bg=self.app.colors["primary"])

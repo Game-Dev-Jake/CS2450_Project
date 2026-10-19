@@ -39,11 +39,11 @@ Window Header with the following dropdown options:
 
             -Secondary Color button : Upon selection, the user will be presented with a standard color selection dialogue box. Selecting a color and pressing 'ok' will set the temporary secondary color to the chosen color.
 
-            -Save button : Upon selection, the program will save the temporary selected primary and secondary colors into the 'config.json' file. If not file is found, nothing will be saved. The dialogue box will terminate.
+            -Save button : Upon selection, the program will save the temporary selected primary and secondary colors into the 'config.json' file. If not file is found, nothing will be saved.
 
-            -Ok button : Upon selection, the program will update the temporary selected primary and secondary colors, and will not save any permanent information to the 'config.json' file. The dialogue box will terminate.
+            -Reset button : Upon selection, the program will reload the primary and secondary color information stored in the 'config.json' file into the program.
 
-            -Cancel button : Upon selection, the program will reload the primary and secondary information stored in the 'config.json' file. The dialogue will terminate.
+            -Okay button : Upon selection, the program will not save any permanent information to the 'config.json' file. The dialogue box will terminate.
 
     - Logs button : Upon selection, the user will be presented with a scrollable dialogue box containing program and error logs.
 
