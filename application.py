@@ -231,6 +231,7 @@ class Application(tk.Tk):
 
 
     def on_file_reset_program(self):
+        self.current_file_path = None
         self.memory.reset_memory()
         self.accumulator.value = 0
         self.listbox_user_console.delete(0, tk.END)
@@ -278,6 +279,7 @@ class Application(tk.Tk):
 
         if not path_str:
             self.cpu.logs.append("No valid path was found!")
+            return
 
         self.current_file_path = Path(path_str)
         self._perform_save(self.current_file_path)
