@@ -17,6 +17,9 @@ class Application(tk.Tk):
     def __init__(self, title: str, loader: LoadHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
         super().__init__()
 
+        self.save_handler = None
+        self.current_file_path: Path = None
+
         self.colors = {
             "primary": "",
             "secondary": ""
@@ -51,7 +54,6 @@ class Application(tk.Tk):
         self.file_menu = tk.Menu(menubar, tearoff=0)
         self.file_menu.add_command(label="Load", command=self.on_file_load)
         self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
-        self.file_menu.add_command(label="Logs", command=self.on_file_logs)
         self.file_menu.add_command(label="Save", command=self.on_file_save)
         self.file_menu.add_command(label="Save As", command=self.on_file_save_as)
         self.file_menu.add_command(label="Exit", command=self.on_file_exit)
@@ -206,6 +208,8 @@ class Application(tk.Tk):
         # if the user cancels the file selection, stop the function
         if not file_path:
             return  
+
+        self.current_file_path = Path(file_path)
         
         # create a loader and give it the file selected by the user
         loader = LoadHandler()
@@ -273,7 +277,7 @@ class Application(tk.Tk):
         )
 
         if not path_str:
-            return
+            self.cpu.logs.append("No valid path was found!")
 
         self.current_file_path = Path(path_str)
         self._perform_save(self.current_file_path)
@@ -285,9 +289,9 @@ class Application(tk.Tk):
 
         if success:
             msg = f"Program successfully saved to {file_path.name}"
-            self.log_to_console(msg)
             if hasattr(self, "cpu") and hasattr(self.cpu, "logs"):
                 self.cpu.logs.append(msg)
-            messagebox.showinfo("Saved", f"File saved successfully:\n{file_path}")
+            #messagebox.showinfo("Saved", f"File saved successfully:\n{file_path}")
         else:
-            messagebox.showerror("Error", f"Failed to save file:\n{file_path}")
+            pass
+            #messagebox.showerror("Error", f"Failed to save file:\n{file_path}")

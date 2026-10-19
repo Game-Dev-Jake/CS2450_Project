@@ -15,15 +15,38 @@ Upon running main.py, UVSim will automatically initialize a CPU, a 100 word memo
 
 A UI dialogue box will be presented with the following features:
 
+
 File Header with the following dropdown options:
 
-    - Load File : Upon selection, the user will be presented with a standard OS-dependent load file dialogue box. When a proper file has been selected, the system will automatically import all BasicML lines into memory.
+    - Load button : Upon selection, the user will be presented with a standard OS-dependent load file dialogue box. When a proper file has been selected, the system will automatically import all BasicML lines into memory.
 
-    - Reset Program : Upon selection, the program will remove all text located in the main console, reset each address in memory to the default value of 0000, and reset the accumulator to the default value of 0000.
+    - Reset Program button : Upon selection, the program will remove all text located in the main console, reset each address in memory to the default value of 0000, and reset the accumulator to the default value of 0000.
 
-    - Logs : Upon selection, the user will be presented with a scrollable dialogue box containing program and error logs.
+    - Save button : Upon selection, the program will save any changes to the loaded BasicML instruction set to the currently loaded file. If no file is loaded, the program will default to the Save As function (see next).
 
-    - Exit : Upon selection, the program will terminate.
+    - Save As button : Upon selection, the program will prompt the user with a default save as dialogue box. You may enter a valid filepath and click save. The program will automatically iterate through the loaded memory and save each line into a new file.
+
+    - Exit button : Upon selection, the program will terminate.
+
+
+Window Header with the following dropdown options:
+
+    -Theme button : Upon selection, the user will be presented with the Theme mManagment dialogue box.
+
+        Theme Management dialogue box contains the following features:
+
+            -Primary Color button : Upon selection, the user will be presented with a standard color selection dialogue box. Selecting a color and pressing 'ok' will set the temporary primary color to the chosen color.
+
+            -Secondary Color button : Upon selection, the user will be presented with a standard color selection dialogue box. Selecting a color and pressing 'ok' will set the temporary secondary color to the chosen color.
+
+            -Save button : Upon selection, the program will save the temporary selected primary and secondary colors into the 'config.json' file. If not file is found, nothing will be saved. The dialogue box will terminate.
+
+            -Ok button : Upon selection, the program will update the temporary selected primary and secondary colors, and will not save any permanent information to the 'config.json' file. The dialogue box will terminate.
+
+            -Cancel button : Upon selection, the program will reload the primary and secondary information stored in the 'config.json' file. The dialogue will terminate.
+
+    - Logs button : Upon selection, the user will be presented with a scrollable dialogue box containing program and error logs.
+
 
 Control Button Collection:
 
@@ -37,9 +60,9 @@ Control Button Collection:
 
     - Clear Accumulator : The program will reset the accumulator to the default value of 0000.
 
-Status Indicator : Indicates the state of execution between running and stopped. NOTE: Currently will only display stopped as the program will either instantly finish or terminate after 1000 passes.
 
 Main Console : Displays all write instruction output.
+
 
 Memory Display : Displays each memory address in a table format with two columns. The lefthand column contains the memory address, and the righthand column displays the value contained in that address.
 
@@ -68,4 +91,3 @@ For example:
 +1009
 +1103
 -4000
-+0000

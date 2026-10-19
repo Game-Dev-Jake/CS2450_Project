@@ -12,11 +12,13 @@ class SaveHandler():
             with file_path.open("w", encoding="utf-8") as file:
                 for index in range(mem.register_count):
                     word = mem.read(index)
-                    file.write(f"{word}\n")
+                    if word == 0:
+                        return True
+                    file.write(f"{word:+05d}\n")
 
             self.saved_file = file_path
             return True
         
         except OSError as e:
-            print(f"Failed to open or write file to directory: {e}")
+            #print(f"Failed to open or write file to directory: {e}")
             return False
