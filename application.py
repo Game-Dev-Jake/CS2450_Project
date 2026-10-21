@@ -5,6 +5,7 @@ from memory import VMemory
 from register import VRegister
 from load_handler import LoadHandler
 from pathlib import Path
+from edit_dialogue import EditDialogue
 
 RED = "#ff0000"
 GREEN = "#00FF00"
@@ -35,6 +36,7 @@ class Application(tk.Tk):
         menubar = tk.Menu(self)
         self.file_menu = tk.Menu(menubar, tearoff=0)
         self.file_menu.add_command(label="Load", command=self.on_file_load)
+        self.file_menu.add_command(label="Edit", command=self.on_file_edit)
         self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
         self.file_menu.add_command(label="Logs", command=self.on_file_logs)
         self.file_menu.add_command(label="Exit", command=self.on_file_exit)
@@ -143,7 +145,10 @@ class Application(tk.Tk):
         # clear the accumulator value to zero
         self.accumulator.value = 0
         
-
+    def on_file_edit(self):
+        #open the basicML editor popup
+        EditDialogue(self)
+    
     def on_file_load(self):
         # Open a file dialog so the user can select a BasicML program
         file_path = filedialog.askopenfilename(
