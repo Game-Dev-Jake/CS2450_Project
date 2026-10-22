@@ -1,6 +1,7 @@
 import tkinter as tk
 from datetime import datetime
 from tkinter import filedialog, messagebox, scrolledtext, ttk
+from pathlib import Path
 
 RUNNING_COLOR = "#16a34a"      # green
 STOPPED_COLOR = "#dc2626"      # red
@@ -227,9 +228,13 @@ class FileMenuActions:
             question = "Are you sure you want to exit UVSim?"
 
         if not messagebox.askyesno("Exit UVSim", question, parent=self.root):
-            return                                   # user changed their mind
+            # user changed their mind
+            return 
 
-        if self.is_running:                          # 1. stop the program
+        # 1. stop the program
+        if self.is_running:                          
             self.stop_program()
-        self._close_logs()                           # 2. close the Logs window
-        self.root.destroy()                          # 3. close UVSim
+        # 2. close the Logs window
+        self._close_logs()
+        # 3. close UVSim
+        self.root.destroy()

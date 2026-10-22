@@ -1,19 +1,37 @@
 import tkinter as tk
+import dialogue_boxes as dialogues
 from tkinter import ttk, filedialog, simpledialog, scrolledtext
 from cpu import VCPU, format_word
+from load_handler import LoadHandler
 from memory import VMemory
 from register import VRegister
 from load_handler import LoadHandler
 from pathlib import Path
 from edit_dialogue import EditDialogue
+from save_handler import SaveHandler
+from config import Config
 
 RED = "#ff0000"
 GREEN = "#00FF00"
 
 class Application(tk.Tk):
-    def __init__(self, title: str, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
+    def __init__(self, title: str, loader: LoadHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
         super().__init__()
 
+        self.save_handler = None
+        self.current_file_path: Path = None
+
+        self.colors = {
+            "primary": "",
+            "secondary": ""
+        }
+
+        self.loader = loader
+
+        self.themed: list[tuple[tk.Widget, dict[str, str]]] = []
+
+        self.themed_widget(self, bg="primary")
+        
         self.logs = logs
 
         self._current_highlight_iid = None
@@ -38,9 +56,17 @@ class Application(tk.Tk):
         self.file_menu.add_command(label="Load", command=self.on_file_load)
         self.file_menu.add_command(label="Edit", command=self.on_file_edit)
         self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
-        self.file_menu.add_command(label="Logs", command=self.on_file_logs)
+        self.file_menu.add_command(label="Save", command=self.on_file_save)
+        self.file_menu.add_command(label="Save As", command=self.on_file_save_as)
         self.file_menu.add_command(label="Exit", command=self.on_file_exit)
         menubar.add_cascade(label="File", menu=self.file_menu)
+
+        self.window_menu = tk.Menu(menubar, tearoff=0)
+        self.window_menu.add_command(label="Theme", command=self.on_window_theme)
+        self.window_menu.add_command(label="Logs", command=self.on_file_logs)
+        menubar.add_cascade(label="Window", menu=self.window_menu)
+        self.themed_widget(menubar, bg="secondary", fg="primary")
+
         self.configure(menu=menubar)
 
         self.memory_tree = ttk.Treeview(self, columns=("col1", "col2"), show="headings")
@@ -56,36 +82,47 @@ class Application(tk.Tk):
 
         self.frame2 = tk.Frame(self, relief="groove", bd=2)
         self.frame2.place(x=40, y=26, width=260, height=250)
-
+        self.themed_widget(self.frame2, bg="secondary")
+        
         self.button_run = tk.Button(self.frame2, text="Run", command=self.on_button_run)
         self.button_run.place(x=20, y=20, width=100, height=30)
+        self.themed_widget(self.button_run, bg="primary", fg="secondary")
 
         self.button_stop = tk.Button(self.frame2, text="Stop", command=self.on_button_stop)
         self.button_stop.place(x=140, y=20, width=100, height=32)
+        self.themed_widget(self.button_stop, bg="primary", fg="secondary")
 
         self.button_step = tk.Button(self.frame2, text="Step", command=self.on_button_step)
         self.button_step.place(x=20, y=70, width=220, height=32)
+        self.themed_widget(self.button_step, bg="primary", fg="secondary")
 
         self.button_clear_memory = tk.Button(self.frame2, text="Clear Memory", command=self.on_button_clear_memory)
         self.button_clear_memory.place(x=20, y=120, width=220, height=32)
+        self.themed_widget(self.button_clear_memory, bg="primary", fg="secondary")
 
         self.button_clear_accumulator = tk.Button(self.frame2, text="Clear Accumulator", command=self.on_button_clear_accumulator)
         self.button_clear_accumulator.place(x=20, y=170, width=220, height=32)
+        self.themed_widget(self.button_clear_accumulator, bg="primary", fg="secondary")
 
         self.label_controls = tk.Label(self.frame2, text="Controls")
         self.label_controls.place(x=85, y=210, width=90, height=26)
+        self.themed_widget(self.label_controls, bg="secondary", fg="primary")
 
         self.label_accumulator = tk.Label(self, text="Accumulator:")
         self.label_accumulator.place(x=60, y=289, width=130, height=26)
+        self.themed_widget(self.label_accumulator, bg="primary", fg="secondary")
 
         self.label_accumulator_value = tk.Label(self, text="+0000", font=("Helvetica", 10, "bold"), state="disabled")
         self.label_accumulator_value.place(x=170, y=289, width=90, height=26)
+        self.themed_widget(self.label_accumulator_value, bg="secondary", fg="primary")
 
-        self.label_status_indicator = tk.Label(self, text="Stopped", fg=RED)
-        self.label_status_indicator.place(x=125, y=0, width=90, height=26)
+        #self.label_status_indicator = tk.Label(self, text="Stopped", fg=RED)
+        #self.label_status_indicator.place(x=125, y=0, width=90, height=26)
+        #self.themed_widget(self.label_status_indicator, bg="primary")
 
         self.listbox_user_console = tk.Listbox(self)
         self.listbox_user_console.place(x=20, y=330, width=300, height=250)
+        self.themed_widget(self.listbox_user_console, fg="primary", bg="secondary")
 
         self.cpu.output_fn = self.log_to_console
 
@@ -93,7 +130,24 @@ class Application(tk.Tk):
 
         self.on_current_changed(self.cpu.current)
 
+        self.load_theme()
+        self.apply_theme()
 
+    def load_theme(self):
+        config = Config.load_file("config.json")
+        self.colors["primary"] = config.theme.colors.primary
+        self.colors["secondary"] = config.theme.colors.secondary
+
+    def themed_widget(self, widget, **roles):
+        self.themed.append((widget,roles))
+    
+    def apply_theme(self):
+        for widget, roles in self.themed:
+            widget.config(**{opt: self.colors[role] for opt, role in roles.items()})
+
+    def on_window_theme(self):
+        dialogues.DialogueTheme(self)
+    
     def on_memory_changed(self, address: int, value: int):
         iid = str(address)
         if self.memory_tree.exists(iid):
@@ -159,6 +213,8 @@ class Application(tk.Tk):
         # if the user cancels the file selection, stop the function
         if not file_path:
             return  
+
+        self.current_file_path = Path(file_path)
         
         # create a loader and give it the file selected by the user
         loader = LoadHandler()
@@ -180,6 +236,7 @@ class Application(tk.Tk):
 
 
     def on_file_reset_program(self):
+        self.current_file_path = None
         self.memory.reset_memory()
         self.accumulator.value = 0
         self.listbox_user_console.delete(0, tk.END)
@@ -210,3 +267,38 @@ class Application(tk.Tk):
         for address in range(self.memory.register_count):
             value = self.memory.read(address)
             self.memory_tree.insert("", "end", iid=str(address), values=(f"{address:02d}", format_word(value)))
+
+    def on_file_save(self):
+            #print("DEBUG: save button was clicked")
+            if not hasattr(self, 'current_file_path') or self.current_file_path is None:
+                self.on_file_save_as()
+            else:
+                self._perform_save(self.current_file_path)
+
+    def on_file_save_as(self):
+        path_str = filedialog.asksaveasfilename(
+            title = "Save Program As",
+            defaultextension = ".txt",
+            filetypes = [("Test files", "*.txt"), ("All files", "*.*")]
+        )
+
+        if not path_str:
+            self.cpu.logs.append("No valid path was found!")
+            return
+
+        self.current_file_path = Path(path_str)
+        self._perform_save(self.current_file_path)
+
+    def _perform_save(self, file_path: Path):
+        handler = SaveHandler()
+
+        success = handler.save_memory(self.memory, file_path)
+
+        if success:
+            msg = f"Program successfully saved to {file_path.name}"
+            if hasattr(self, "cpu") and hasattr(self.cpu, "logs"):
+                self.cpu.logs.append(msg)
+            #messagebox.showinfo("Saved", f"File saved successfully:\n{file_path}")
+        else:
+            pass
+            #messagebox.showerror("Error", f"Failed to save file:\n{file_path}")
