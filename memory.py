@@ -23,7 +23,6 @@ class VMemory():
         else:
             self.log("ERROR: Attempted to write to an invalid address.")
 
-
     def write(self, address: int, value: int):
         if self.is_valid_address(address):
             self.registers[address].value = value

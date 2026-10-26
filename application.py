@@ -15,7 +15,7 @@ RED = "#ff0000"
 GREEN = "#00FF00"
 
 class Application(tk.Frame):
-    def __init__(self, parent, loader: LoadHandler, saver: SaveHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
+    def __init__(self, parent, loader: LoadHandler, saver: SaveHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], themed_widget: callable, width: int = 600, height: int = 600):
         super().__init__(parent, width=width, height=height)
 
         self.save_handler = saver
@@ -27,10 +27,6 @@ class Application(tk.Frame):
         }
 
         self.loader = loader
-
-        self.themed: list[tuple[tk.Widget, dict[str, str]]] = []
-
-        self.themed_widget(self, bg="primary")
         
         self.logs = logs
 
@@ -60,39 +56,39 @@ class Application(tk.Frame):
 
         self.frame2 = tk.Frame(self, relief="groove", bd=2)
         self.frame2.place(x=40, y=26, width=260, height=250)
-        self.themed_widget(self.frame2, bg="secondary")
+        themed_widget(self.frame2, bg="secondary")
         
         self.button_run = tk.Button(self.frame2, text="Run", command=self.on_button_run)
         self.button_run.place(x=20, y=20, width=100, height=30)
-        self.themed_widget(self.button_run, bg="primary", fg="secondary")
+        themed_widget(self.button_run, bg="primary", fg="secondary")
 
         self.button_stop = tk.Button(self.frame2, text="Stop", command=self.on_button_stop)
         self.button_stop.place(x=140, y=20, width=100, height=32)
-        self.themed_widget(self.button_stop, bg="primary", fg="secondary")
+        themed_widget(self.button_stop, bg="primary", fg="secondary")
 
         self.button_step = tk.Button(self.frame2, text="Step", command=self.on_button_step)
         self.button_step.place(x=20, y=70, width=220, height=32)
-        self.themed_widget(self.button_step, bg="primary", fg="secondary")
+        themed_widget(self.button_step, bg="primary", fg="secondary")
 
         self.button_clear_memory = tk.Button(self.frame2, text="Clear Memory", command=self.on_button_clear_memory)
         self.button_clear_memory.place(x=20, y=120, width=220, height=32)
-        self.themed_widget(self.button_clear_memory, bg="primary", fg="secondary")
+        themed_widget(self.button_clear_memory, bg="primary", fg="secondary")
 
         self.button_clear_accumulator = tk.Button(self.frame2, text="Clear Accumulator", command=self.on_button_clear_accumulator)
         self.button_clear_accumulator.place(x=20, y=170, width=220, height=32)
-        self.themed_widget(self.button_clear_accumulator, bg="primary", fg="secondary")
+        themed_widget(self.button_clear_accumulator, bg="primary", fg="secondary")
 
         self.label_controls = tk.Label(self.frame2, text="Controls")
         self.label_controls.place(x=85, y=210, width=90, height=26)
-        self.themed_widget(self.label_controls, bg="secondary", fg="primary")
+        themed_widget(self.label_controls, bg="secondary", fg="primary")
 
         self.label_accumulator = tk.Label(self, text="Accumulator:")
         self.label_accumulator.place(x=60, y=289, width=130, height=26)
-        self.themed_widget(self.label_accumulator, bg="primary", fg="secondary")
+        themed_widget(self.label_accumulator, bg="primary", fg="secondary")
 
         self.label_accumulator_value = tk.Label(self, text="+0000", font=("Helvetica", 10, "bold"), state="disabled")
         self.label_accumulator_value.place(x=170, y=289, width=90, height=26)
-        self.themed_widget(self.label_accumulator_value, bg="secondary", fg="primary")
+        themed_widget(self.label_accumulator_value, bg="secondary", fg="primary")
 
         #self.label_status_indicator = tk.Label(self, text="Stopped", fg=RED)
         #self.label_status_indicator.place(x=125, y=0, width=90, height=26)
@@ -100,34 +96,14 @@ class Application(tk.Frame):
 
         self.listbox_user_console = tk.Listbox(self)
         self.listbox_user_console.place(x=20, y=330, width=300, height=250)
-        self.themed_widget(self.listbox_user_console, fg="primary", bg="secondary")
+        themed_widget(self.listbox_user_console, fg="primary", bg="secondary")
 
         self.cpu.output_fn = self.log_to_console
 
         self.load_memory_tree()
 
         self.on_current_changed(self.cpu.current)
-
-        self.load_theme()
-        self.apply_theme()
-
-    def load_theme(self):
-        config = Config.load_file("config.json")
-        self.colors["primary"] = config.theme.colors.primary
-        self.colors["secondary"] = config.theme.colors.secondary
-
-    def themed_widget(self, widget, **roles):
-        if (widget, roles) not in self.themed:
-            self.themed.append((widget,roles))
-    
-    def apply_theme(self):
-        self.themed = [(w, r) for w, r in self.themed if w.winfo_exists()]
-
-        for widget, roles in self.themed:
-            widget.config(**{opt: self.colors[role] for opt, role in roles.items()})
-
-    def on_window_theme(self):
-        dialogues.DialogueTheme(self)
+            
     
     def on_memory_changed(self, address: int, value: int):
         iid = str(address)

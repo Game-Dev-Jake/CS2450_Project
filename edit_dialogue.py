@@ -5,17 +5,18 @@ from cpu import format_word
 
 
 class EditDialogue(tk.Toplevel):
-    def __init__(self, app):
+    def __init__(self, master, app):
         super().__init__(app)
 
         #set access to the main app, and the size, title, and behavior
+        self.master = master
         self.app = app
         self.title("UVSim - Edit Program")
         self.geometry("500x550")
         self.resizable(True, True)
         self.transient(app)
 
-        app.themed_widget(self, bg="primary")
+        master.themed_widget(self, bg="primary")
         ##edit menu
         
         #create a menu bar for the window
@@ -57,7 +58,7 @@ class EditDialogue(tk.Toplevel):
         )
         #places the heading 
         self.label_title.pack(pady=15)
-        app.themed_widget(self.label_title, bg="primary", fg="secondary")
+        master.themed_widget(self.label_title, bg="primary", fg="secondary")
 
         ## editing toolbar
         # creates a frame to hold the four editing buttons
@@ -120,7 +121,7 @@ class EditDialogue(tk.Toplevel):
 
         self.button_frame = tk.Frame(self, relief="groove")
         self.button_frame.place(x=20, y= 430, height = 80, width = 460)
-        app.themed_widget(self.button_frame, bg="secondary")
+        master.themed_widget(self.button_frame, bg="secondary")
 
 
         ##apply changes button
@@ -131,7 +132,7 @@ class EditDialogue(tk.Toplevel):
             command=self.apply_changes
         )
         self.apply_button.place(width=200, height=30, y=25, x=20)
-        app.themed_widget(self.apply_button, bg="primary", fg="secondary")
+        master.themed_widget(self.apply_button, bg="primary", fg="secondary")
 
         ##close button
         #closes the popup without applying any pendings
@@ -141,9 +142,9 @@ class EditDialogue(tk.Toplevel):
             command=self.destroy
         )
         self.close_button.place(width=200, height=30, y=25, x=240)
-        app.themed_widget(self.close_button, bg="primary", fg="secondary")
+        master.themed_widget(self.close_button, bg="primary", fg="secondary")
 
-        app.apply_theme()
+        master.apply_theme()
 
     
     ##apply changes methods
@@ -181,7 +182,7 @@ class EditDialogue(tk.Toplevel):
                 messagebox.showerror(
                     "Invalid BasicML",
                     f"Invalid instruction on line {line_number}: {word!r}\n"
-                    "Use a sign and four digits, like +1007.",
+                    "Use a sign and four digits, like +010007.",
                     parent=self
                 )
                 return
