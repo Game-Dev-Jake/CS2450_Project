@@ -103,6 +103,8 @@ class VCPU():
 
     def READ(self, address):
         if not is_valid_address(address, self.memory.register_count):
+            self.log("Attempted to write a value to an invalid address.")
+            self.running = False
             return False
         value: int = self._read_observer()
         self.memory.write(address, value)

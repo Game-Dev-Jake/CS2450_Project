@@ -8,6 +8,8 @@ from edit_dialogue import EditDialogue
 from config import Config
 import dialogue_boxes as dialogues
 
+CONFIG_FILE = "config.json"
+
 class MasterApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -55,9 +57,10 @@ class MasterApp(tk.Tk):
 
 
     def load_theme(self):
-        config = Config.load_file("config.json")
-        self.colors["primary"] = config.theme.colors.primary
-        self.colors["secondary"] = config.theme.colors.secondary
+        config = Config.load_file(CONFIG_FILE)
+        if config:
+            self.colors["primary"] = config.theme.colors.primary
+            self.colors["secondary"] = config.theme.colors.secondary
 
 
     def themed_widget(self, widget, **roles):

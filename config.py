@@ -21,6 +21,9 @@ class Config:
 
     @classmethod
     def load_file(cls, filepath: str | Path) -> "Config":
-        with open(filepath, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return cls(theme=Theme.from_dict(data["theme"]))
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return cls(theme=Theme.from_dict(data["theme"]))
+        except:
+            return None

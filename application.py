@@ -21,17 +21,11 @@ class Application(tk.Frame):
         self.save_handler = saver
         self.current_file_path: Path = None
 
-        self.colors = {
-            "primary": "",
-            "secondary": ""
-        }
-
         self.loader = loader
         
         self.logs = logs
 
         self._current_highlight_iid = None
-        
 
         self.cpu = cpu
         self.memory = memory
