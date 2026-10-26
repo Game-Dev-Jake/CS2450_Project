@@ -32,7 +32,7 @@ class MasterApp(tk.Tk):
         self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
         self.file_menu.add_command(label="Save", command=self.on_file_save)
         self.file_menu.add_command(label="Save As", command=self.on_file_save_as)
-        self.file_menu.add_command(label="Exit", command=self.on_file_exit)
+        self.file_menu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=self.file_menu)
 
         self.edit_menu = tk.Menu(menubar,tearoff=0)
@@ -84,6 +84,7 @@ class MasterApp(tk.Tk):
         self.themed_widget(app, bg="primary")
 
         self.main_notebook.add(app, text=title)
+        self.main_notebook.select(app)
         self.apply_theme()
 
     def current_app(self) -> Application:
@@ -111,9 +112,6 @@ class MasterApp(tk.Tk):
     def on_file_save_as(self):
         self.current_app().on_file_save_as()
         self.main_notebook.tab("current",text=self.current_app().current_file_path.name)
-
-    def on_file_exit(self):
-        self.current_app().on_file_exit()
 
     def on_window_theme(self):
         dialogues.DialogueTheme(self)

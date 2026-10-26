@@ -86,7 +86,7 @@ class Application(tk.Frame):
         self.label_accumulator.place(x=60, y=289, width=130, height=26)
         themed_widget(self.label_accumulator, bg="primary", fg="secondary")
 
-        self.label_accumulator_value = tk.Label(self, text="+0000", font=("Helvetica", 10, "bold"), state="disabled")
+        self.label_accumulator_value = tk.Label(self, text="+000000", font=("Helvetica", 10, "bold"), state="disabled")
         self.label_accumulator_value.place(x=170, y=289, width=90, height=26)
         themed_widget(self.label_accumulator_value, bg="secondary", fg="primary")
 
@@ -213,10 +213,6 @@ class Application(tk.Frame):
             log_text.insert("end", "No logs recorded.")
 
         log_text.config(state="disabled")
-
-
-    def on_file_exit(self):
-        self.quit()
 
 
     def load_memory_tree(self):
