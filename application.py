@@ -139,9 +139,12 @@ class Application(tk.Tk):
         self.colors["secondary"] = config.theme.colors.secondary
 
     def themed_widget(self, widget, **roles):
-        self.themed.append((widget,roles))
+        if (widget, roles) not in self.themed:
+            self.themed.append((widget,roles))
     
     def apply_theme(self):
+        self.themed = [(w, r) for w, r in self.themed if w.winfo_exists()]
+
         for widget, roles in self.themed:
             widget.config(**{opt: self.colors[role] for opt, role in roles.items()})
 
@@ -155,9 +158,9 @@ class Application(tk.Tk):
 
 
     def on_read_prompt(self) -> int:
-        user_input = simpledialog.askinteger("Number Input","Please enter an integer between -9999 and +9999, default 0000:", minvalue=-9999, maxvalue=9999)
+        user_input = dialogues.IntegerPrompt("Number Input","Please enter an integer between -9999 and +9999, default 0000:", minvalue=-9999, maxvalue=9999)
         if user_input != None:
-            return user_input
+            return user_input.result
         else: return 0
 
 

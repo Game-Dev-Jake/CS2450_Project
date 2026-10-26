@@ -14,99 +14,101 @@ class EditDialogue(tk.Toplevel):
         self.geometry("500x550")
         self.resizable(True, True)
         self.transient(app)
-        
+
+        app.themed_widget(self, bg="primary")
         ##edit menu
         
         #create a menu bar for the window
-        self.menu_bar = tk.Menu(self)
+        #self.menu_bar = tk.Menu(self)
         
         #edit dropdown menu created
-        self.edit_menu = tk.Menu(self.menu_bar, tearoff=0) #tearoff prevents from being detatched
+        #self.edit_menu = tk.Menu(self.menu_bar, tearoff=0) #tearoff prevents from being detatched
         
         #Cut removes text and copies it to the clipboard 
-        self.edit_menu.add_command(
-            label="cut",
-            command=lambda: self.editor.event_generate("<<Cut>>")
-        )
+        #self.edit_menu.add_command(
+        #    label="cut",
+        #    command=lambda: self.editor.event_generate("<<Cut>>")
+        #)
         #copy placed the selected text in the clipboard
-        self.edit_menu.add_command(
-            label="copy",
-            command=lambda: self.editor.event_generate("<<Copy>>")
-        )
+        #self.edit_menu.add_command(
+        #    label="copy",
+        #    command=lambda: self.editor.event_generate("<<Copy>>")
+        #)
         #paste  inserts text from the clipboard
-        self.edit_menu.add_command(
-            label="paste",
-            command=lambda: self.editor.event_generate("<<Paste>>")
-        )
+        #self.edit_menu.add_command(
+        #    label="paste",
+        #    command=lambda: self.editor.event_generate("<<Paste>>")
+        #)
         #delete calls our custom delete_text method
-        self.edit_menu.add_command(
-            label="delete",
-            command=self.delete_text
-        )
+        #self.edit_menu.add_command(
+        #    label="delete",
+        #    command=self.delete_text
+        #)
         #add the edit dropdown to the menu bar and attaches the menu bar to the popup window
-        self.menu_bar.add_cascade(label="Edit", menu=self.edit_menu)
-        self.config(menu=self.menu_bar)
+        #self.menu_bar.add_cascade(label="Edit", menu=self.edit_menu)
+        #self.config(menu=self.menu_bar)
 
         ##popup title
         #title of the popup window
-        self.label_title = ttk.Label(
+        self.label_title = tk.Label(
             self,
             text="BasicML Program Editor",
             font=("Arial", 16, "bold")
         )
         #places the heading 
         self.label_title.pack(pady=15)
+        app.themed_widget(self.label_title, bg="primary", fg="secondary")
 
         ## editing toolbar
         # creates a frame to hold the four editing buttons
-        self.toolbar = ttk.Frame(self)
-        self.toolbar.pack(pady=5)
+        #self.toolbar = ttk.Frame(self)
+        #self.toolbar.pack(pady=5)
         
         #cut button
-        self.cut_button = ttk.Button(
-            self.toolbar,
-            text="Cut",
-            command=lambda: self.editor.event_generate("<<Cut>>")
-        )
-        self.cut_button.pack(side="left", padx=5)
+        #self.cut_button = ttk.Button(
+        #    self.toolbar,
+        #    text="Cut",
+        #    command=lambda: self.editor.event_generate("<<Cut>>")
+        #)
+        #self.cut_button.pack(side="left", padx=5)
         
         #copy button
-        self.copy_button = ttk.Button(
-            self.toolbar,
-            text="Copy",
-            command=lambda: self.editor.event_generate("<<Copy>>")
-        )
-        self.copy_button.pack(side="left", padx=5)
+        #self.copy_button = ttk.Button(
+        #    self.toolbar,
+        #    text="Copy",
+        #    command=lambda: self.editor.event_generate("<<Copy>>")
+        #)
+        #self.copy_button.pack(side="left", padx=5)
         
         #paste button
-        self.paste_button = ttk.Button(
-            self.toolbar,
-            text="Paste",
-            command=lambda: self.editor.event_generate("<<Paste>>")
-        )
-        self.paste_button.pack(side="left", padx=5)
+        #self.paste_button = ttk.Button(
+        #    self.toolbar,
+        #    text="Paste",
+        #    command=lambda: self.editor.event_generate("<<Paste>>")
+        #)
+        #self.paste_button.pack(side="left", padx=5)
         #delete button
-        self.delete_button = ttk.Button(
-            self.toolbar,
-            text="Delete",
-            command=self.delete_text
-        )
-        self.delete_button.pack(side="left", padx=5)
+        #self.delete_button = ttk.Button(
+        #    self.toolbar,
+        #    text="Delete",
+        #    command=self.delete_text
+        #)
+        #self.delete_button.pack(side="left", padx=5)
         
         ##basicml text editor
         #creating a scrolling text box where users can edit the basicml
         self.editor = scrolledtext.ScrolledText(
             self,
-            font=("Courier", 12),
+            font=("Courier", 11),
             undo=True, #allow undo while editing
-            wrap="none" #keep long lines from automatically wrapping
+            wrap="none", #keep long lines from automatically wrapping
+            height=20
         )
         #making the editor expand to fil available space
         self.editor.pack(
             padx=20,
             pady=10,
-            fill="both",
-            expand=True
+            #fill="both",
         )
 
         ##load current memory into the editor
@@ -115,24 +117,33 @@ class EditDialogue(tk.Toplevel):
             value = self.app.memory.read(address) 
             #formats the value as four-digit ML and inserts
             self.editor.insert("end", format_word(value) + "\n") 
-        
+
+        self.button_frame = tk.Frame(self, relief="groove")
+        self.button_frame.place(x=20, y= 430, height = 80, width = 460)
+        app.themed_widget(self.button_frame, bg="secondary")
+
+
         ##apply changes button
         #when clicked, run the apply_changes method
-        self.apply_button = ttk.Button(
-            self,
+        self.apply_button = tk.Button(
+            self.button_frame,
             text="Apply Changes",
             command=self.apply_changes
         )
-        self.apply_button.pack(pady=5)
+        self.apply_button.place(width=200, height=30, y=25, x=20)
+        app.themed_widget(self.apply_button, bg="primary", fg="secondary")
 
         ##close button
         #closes the popup without applying any pendings
-        self.close_button = ttk.Button(
-            self,
+        self.close_button = tk.Button(
+            self.button_frame,
             text="Close",
             command=self.destroy
         )
-        self.close_button.pack(pady=15)
+        self.close_button.place(width=200, height=30, y=25, x=240)
+        app.themed_widget(self.close_button, bg="primary", fg="secondary")
+
+        app.apply_theme()
 
     
     ##apply changes methods
@@ -200,4 +211,3 @@ class EditDialogue(tk.Toplevel):
             self.editor.delete("sel.first", "sel.last")#  delete text between the first and last selected 
         except tk.TclError:
             pass
-        

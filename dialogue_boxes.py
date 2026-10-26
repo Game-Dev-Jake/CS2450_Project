@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import colorchooser
+from tkinter import ttk, colorchooser, simpledialog
 
 class DialogueTheme(tk.Toplevel):
     def __init__(self, app):
@@ -64,3 +63,15 @@ class DialogueTheme(tk.Toplevel):
     def apply_theme(self):
         self.frame_primary_color.config(bg=self.app.colors["primary"])
         self.frame_secondary_color.config(bg=self.app.colors["secondary"])
+
+class IntegerPrompt(simpledialog._QueryInteger):
+    def buttonbox(self):
+        box = tk.Frame(self)
+        tk.Button(box, text="OK", width=10, command=self.ok, default=tk.ACTIVE).pack(padx=5, pady=5)
+        self.bind("<Return>", self.ok)
+        box.pack()
+
+    def cancel(self, event=None):
+        if self.result is None:
+            return
+        super().cancel(event)

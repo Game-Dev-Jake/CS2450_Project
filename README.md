@@ -18,6 +18,12 @@ A UI dialogue box will be presented with the following features:
 
 File Header with the following dropdown options:
 
+    - Edit button : Upon selection, the user will be presented with a editable text dialogue box. The system will automatically load any values from memory into the display for modification. The user may copy, cut, paste, and delete any text located in this dialogue box.
+        
+        Apply Changes button : Upon selection the system will iterate through each line of the editable text and attempt to import it back into UVSim memory. If an invalid line is detected, the system will present a user with an error.
+
+        Close button : Upon selection the system will close the dialogue box.
+
     - Load button : Upon selection, the user will be presented with a standard OS-dependent load file dialogue box. When a proper file has been selected, the system will automatically import all BasicML lines into memory.
 
     - Reset Program button : Upon selection, the program will remove all text located in the main console, reset each address in memory to the default value of 0000, and reset the accumulator to the default value of 0000.
