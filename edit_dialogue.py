@@ -172,7 +172,7 @@ class EditDialogue(tk.Toplevel):
             #a + or - sign
             #four ascii digits
             if (
-                len(word) != 5
+                len(word) != 7
                 or word[0] not in "+-"
                 or not word[1:].isascii()
                 or not word[1:].isdigit()

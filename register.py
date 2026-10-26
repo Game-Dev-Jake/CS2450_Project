@@ -5,10 +5,8 @@ class VRegister():
         self._value = value
         self._observers = []
 
-
     def add_accumulator_observer(self, callback):
         self._observers.append(callback)
-    
 
     @property
     def value(self):
@@ -17,11 +15,11 @@ class VRegister():
     @value.setter
     def value(self, val):
         int_val = int(math.floor(val))
-        if int_val < 10000 and int_val > -10000:
+        if int_val < 1000000 and int_val > -1000000:
             self._value = int_val
         else:
             magnitude = abs(val)
-            truncated_val = int(str(magnitude)[:4])
+            truncated_val = int(str(magnitude)[:6])
             self._value = truncated_val if val >= 0 else -truncated_val
 
         for callback in self._observers:

@@ -158,7 +158,7 @@ class Application(tk.Tk):
 
 
     def on_read_prompt(self) -> int:
-        user_input = dialogues.IntegerPrompt("Number Input","Please enter an integer between -9999 and +9999, default 0000:", minvalue=-9999, maxvalue=9999)
+        user_input = dialogues.IntegerPrompt("Number Input","Please enter an integer between -999999 and +999999:", minvalue=-999999, maxvalue=999999)
         if user_input != None:
             return user_input.result
         else: return 0
@@ -228,7 +228,7 @@ class Application(tk.Tk):
         self.listbox_user_console.delete(0, tk.END)
         
         # load the selected program into UVSim memory
-        loader.load_memory(self.memory)
+        loader.load_memory(self.memory,self.cpu.opcode_table)
 
         # Make sure the first element is selected
         self.memory_tree.selection_set(0)
@@ -269,7 +269,7 @@ class Application(tk.Tk):
         self.memory_tree.delete(*self.memory_tree.get_children())
         for address in range(self.memory.register_count):
             value = self.memory.read(address)
-            self.memory_tree.insert("", "end", iid=str(address), values=(f"{address:02d}", format_word(value)))
+            self.memory_tree.insert("", "end", iid=str(address), values=(f"{address:03d}", format_word(value)))
 
     def on_file_save(self):
             #print("DEBUG: save button was clicked")

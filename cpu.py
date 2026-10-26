@@ -4,23 +4,23 @@ from collections.abc import Callable
 from datetime import datetime
 import math
 
-MIN_WORD = -9999
-MAX_WORD = 9999
+MIN_WORD = -999999
+MAX_WORD = 999999
 
 # True if `address` refers to a real memory location.
 def is_valid_address(address, register_count):
         return isinstance(address, int) and 0 <= address < register_count
 
-# true if the value is a UVSim word    
+# true if the value is a UVSim word
 def is_valid_word(value):
     if isinstance(value, bool) or not isinstance(value, int):
         return False
     return MIN_WORD <= value <= MAX_WORD
 
-# True if `value` is a legal UVSim word.    
+# True if `value` is a legal UVSim word.
 def format_word(value):
     sign = "+" if value >= 0 else "-"
-    return "{}{:04d}".format(sign, abs(value))
+    return "{}{:06d}".format(sign, abs(value))
 
 class VCPU():
     def __init__(self, accum: VRegister, mem: VMemory, logs: list[str], cur: int = 0, run_limit: int = 999, output_fn = print):
@@ -83,7 +83,7 @@ class VCPU():
 
     def step(self):
         word: int = self.memory.read(self.current)
-        opcode, address = divmod(word, 100)
+        opcode, address = divmod(word, 1000)
         self.current +=1
         if opcode == 0:
             
@@ -166,7 +166,7 @@ class VCPU():
 
     def BRANCH(self, address: int):
         # branch to a valid address
-        if not (0 <= address <= 99):
+        if not (is_valid_address(address,self.memory.register_count)):
             raise ValueError("Invalid branch address")
         
         self.current = address
@@ -175,7 +175,7 @@ class VCPU():
 
     def BRANCHNEG(self, address: int):
         # branch when accumulator is negative
-        if not (0 <= address <= 99):
+        if not (is_valid_address(address,self.memory.register_count)):
             raise ValueError("Invalid branch address")
         
         if self.accumulator.value < 0:
@@ -187,7 +187,7 @@ class VCPU():
 
     def BRANCHZERO(self, address: int):
         # branch when accumulator equals zero
-        if not (0 <= address <= 99):
+        if not (is_valid_address(address,self.memory.register_count)):
             raise ValueError("Invalid branch address")
         
         if self.accumulator.value == 0:

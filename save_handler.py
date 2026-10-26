@@ -14,7 +14,7 @@ class SaveHandler():
                     word = mem.read(index)
                     if word == 0:
                         return True
-                    file.write(f"{word:+05d}\n")
+                    file.write(f"{word:+07d}\n")
 
             self.saved_file = file_path
             return True
