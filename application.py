@@ -14,11 +14,11 @@ from config import Config
 RED = "#ff0000"
 GREEN = "#00FF00"
 
-class Application(tk.Tk):
-    def __init__(self, title: str, loader: LoadHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
-        super().__init__()
+class Application(tk.Frame):
+    def __init__(self, parent, loader: LoadHandler, saver: SaveHandler, cpu: VCPU, memory: VMemory, accumulator: VRegister, logs: list[str], width: int = 600, height: int = 600):
+        super().__init__(parent, width=width, height=height)
 
-        self.save_handler = None
+        self.save_handler = saver
         self.current_file_path: Path = None
 
         self.colors = {
@@ -36,8 +36,6 @@ class Application(tk.Tk):
 
         self._current_highlight_iid = None
         
-        self.title(title)
-        self.geometry(f"{width}x{height}")
 
         self.cpu = cpu
         self.memory = memory
@@ -47,27 +45,7 @@ class Application(tk.Tk):
         self.cpu.add_read_observer(self.on_read_prompt)
         self.memory._memory_observer = self.on_memory_changed
 
-        self.resizable(False,False)
-
         self.accumulator.add_accumulator_observer(self.on_accumulator_changed)
-
-        menubar = tk.Menu(self)
-        self.file_menu = tk.Menu(menubar, tearoff=0)
-        self.file_menu.add_command(label="Load", command=self.on_file_load)
-        self.file_menu.add_command(label="Edit", command=self.on_file_edit)
-        self.file_menu.add_command(label="Reset Program", command=self.on_file_reset_program)
-        self.file_menu.add_command(label="Save", command=self.on_file_save)
-        self.file_menu.add_command(label="Save As", command=self.on_file_save_as)
-        self.file_menu.add_command(label="Exit", command=self.on_file_exit)
-        menubar.add_cascade(label="File", menu=self.file_menu)
-
-        self.window_menu = tk.Menu(menubar, tearoff=0)
-        self.window_menu.add_command(label="Theme", command=self.on_window_theme)
-        self.window_menu.add_command(label="Logs", command=self.on_file_logs)
-        menubar.add_cascade(label="Window", menu=self.window_menu)
-        self.themed_widget(menubar, bg="secondary", fg="primary")
-
-        self.configure(menu=menubar)
 
         self.memory_tree = ttk.Treeview(self, columns=("col1", "col2"), show="headings")
         self.memory_tree.heading("col1", text="Address")

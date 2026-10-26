@@ -13,12 +13,9 @@ def main():
     main_mem: VMemory = VMemory(logs,memory_count)
     accumulator: VRegister = VRegister(0)
     cpu: VCPU = VCPU(accumulator,main_mem,logs)
-    app = Application("UVSim Application",loader,cpu,main_mem,accumulator,logs)
-    #master = MasterApp()
-    app.current_file_path = None
-    app.save_handler = save_handler
-    app.mainloop()
-    #master.mainloop()
+    #app = Application("UVSim Application",loader,save_handler,cpu,main_mem,accumulator,logs)
+    master = MasterApp()
+    master.mainloop()
 
 if __name__ == "__main__":
     main()
